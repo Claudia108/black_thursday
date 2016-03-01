@@ -1,7 +1,7 @@
 class MerchantRepository
   #se.merchants -- merchants is salesengine method
-  def initialize
-    @merchants = []
+  def initialize(mechants=[])
+    @merchants = merchants
   end
   def all
     @merchants
