@@ -11,7 +11,8 @@ class SalesAnalystTest < Minitest::Test
             :items         => './fixtures/items_fixtures.csv',
             :invoices      => './fixtures/invoices_fixtures.csv',
             :invoice_items => './fixtures/invoice_items_fixtures.csv',
-            :transactions  => './fixtures/transactions_fixtures.csv'
+            :transactions  => './fixtures/transactions_fixtures.csv',
+            :customers => './fixtures/customers_fixtures.csv'
             })
     @mr = se.merchants
     @sa = SalesAnalyst.new(se)
@@ -22,13 +23,12 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_average_items_per_merchant_standard_deviation
-    assert_equal 0.53, @sa.average_items_per_merchant_standard_deviation
+    assert_equal 0.96, @sa.average_items_per_merchant_standard_deviation
   end
 
   def test_merchants_with_high_item_count
-    assert_equal 'Candisart', @sa.merchants_with_high_item_count[0].name
-    assert_equal "MiniatureBikez", @sa.merchants_with_high_item_count[1].name
-    assert_equal nil, @sa.merchants_with_high_item_count[2]
+    assert_equal "MiniatureBikez", @sa.merchants_with_high_item_count[0].name
+    assert_equal nil, @sa.merchants_with_high_item_count[1]
   end
 
   def test_average_item_price_for_merchant

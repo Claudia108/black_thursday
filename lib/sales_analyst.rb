@@ -26,12 +26,12 @@ class SalesAnalyst
     sum = item_count.reduce(0) do |sum, count|
       sum + ((count - average) ** 2)
     end
-    deviation = Math.sqrt(sum / @mr.all.count - 1).round(2)
+    deviation = Math.sqrt(sum / (@mr.all.count - 1)).round(2)
     # (deviation * 100).floor / 100.0
   end
 
   def merchants_with_high_item_count
-    threshold = average_items_per_merchant + average_items_per_merchant_standard_deviation + 1
+    threshold = average_items_per_merchant + average_items_per_merchant_standard_deviation
     merchant_ids = @mr.all.map { |merchant| merchant.id }
     golden_merchants = []
     merchant_ids.each do |id|
@@ -40,6 +40,7 @@ class SalesAnalyst
         golden_merchants << @mr.find_by_id(id)
       end
     end
+    # binding.pry
     golden_merchants
   end
 
