@@ -40,7 +40,6 @@ class SalesAnalyst
         golden_merchants << @mr.find_by_id(id)
       end
     end
-    # binding.pry
     golden_merchants
   end
 

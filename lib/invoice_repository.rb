@@ -22,6 +22,10 @@ class InvoiceRepository
     @invoices
   end
 
+  def find_merchant(merchant_id)
+    @sales_engine.merchants.find_by_id(merchant_id)
+  end
+
   def all
     @invoices
   end

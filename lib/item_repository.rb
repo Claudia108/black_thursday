@@ -25,6 +25,10 @@ class ItemRepository
     @items
   end
 
+  def find_merchant(merchant_id)
+    @sales_engine.merchants.find_by_id(merchant_id)
+  end
+
   def all
     @items
   end
@@ -57,8 +61,5 @@ class ItemRepository
     @items.find_all { |object| object.merchant_id == id }
   end
 
-  def find_merchant(merchant_id)
-    @sales_engine.merchants.find_by_id(merchant_id)
-  end
 
 end

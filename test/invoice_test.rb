@@ -44,6 +44,20 @@ class InvoiceTest < Minitest::Test
     assert_equal Time.parse("2014-03-15"), @invoice.updated_at
   end
 
+  def test_merchant_finds_invoices_merchant
+    se = SalesEngine.from_csv({
+            :merchants     => './fixtures/merchants_fixtures.csv',
+            :items         => './fixtures/items_fixtures.csv',
+            :invoices      => './fixtures/invoices_fixtures.csv',
+            :invoice_items => './fixtures/invoice_items_fixtures.csv',
+            :transactions  => './fixtures/transactions_fixtures.csv',
+            :customers => './fixtures/customers_fixtures.csv'
+            })
+    ir = se.invoices
+    invoice = ir.find_by_id(1)
+    assert_equal "NatureDots", invoice.merchant.name
+  end
+
   # def test_returns_price_in_dollars_formatted_as_float
   #   assert_equal 12.00, @item.unit_price_per_dollars
   # end

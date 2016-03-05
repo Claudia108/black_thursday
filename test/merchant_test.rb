@@ -36,6 +36,12 @@ class MerchantTest < Minitest::Test
     assert_equal nil, @m.items[1]
   end
 
-
+  def test_invoices_returns_merchants_invoices
+    invoices = @m.invoices
+    assert_equal 2, invoices[0].id
+    assert_equal 11, invoices[1].id
+    assert_equal 12, invoices[2].id
+    assert_equal 3, invoices.count
+  end
 
 end

@@ -68,4 +68,9 @@ class InvoiceRepositoryTest < Minitest::Test
   def test_find_all_by_status_returns_empty_array_if_no_matching_status
     assert_equal [], @ir.find_all_by_status(:lozgag)
   end
+
+  def test_find_merchant_returns_invoices_merchant
+    assert_equal "NatureDots", @ir.find_merchant(14784142).name
+  end
+  
 end
