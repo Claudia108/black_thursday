@@ -13,7 +13,9 @@ class InvoiceItemRepositoryTest < Minitest::Test
             :items         => './fixtures/items_fixtures.csv',
             :invoices      => './fixtures/invoices_fixtures.csv',
             :invoice_items => './fixtures/invoice_items_fixtures.csv',
-            :transactions  => './fixtures/transactions_fixtures.csv'})
+            :transactions  => './fixtures/transactions_fixtures.csv',
+            :customers => './fixtures/customers_fixtures.csv'
+            })
     @ir = se.invoice_items
   end
 
@@ -21,7 +23,7 @@ class InvoiceItemRepositoryTest < Minitest::Test
     all = @ir.all
     assert_equal 1, all[0].id
     assert_equal 2, all[1].id
-    assert_equal 24, all.count
+    assert_equal 25, all.count
   end
 
   def test_find_by_id_returns_first_invoice_with_matching_id

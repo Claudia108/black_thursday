@@ -11,7 +11,8 @@ class SalesEngineTest < Minitest::Test
               :items         => '../test/fixtures/items_fixtures.csv',
               :invoices      => '../test/fixtures/invoices_fixtures.csv',
               :invoice_items => '../test/fixtures/invoice_items_fixtures.csv',
-              :transactions  => './fixtures/transactions_fixtures.csv'
+              :transactions  => './fixtures/transactions_fixtures.csv',
+              :customers => './fixtures/customers_fixtures.csv'
               })
     assert_equal MerchantRepository, se.merchants.class
     assert_equal ItemRepository, se.items.class

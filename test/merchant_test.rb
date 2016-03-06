@@ -13,7 +13,8 @@ class MerchantTest < Minitest::Test
             :items     => './fixtures/items_fixtures.csv',
             :invoices      => './fixtures/invoices_fixtures.csv',
             :invoice_items => './fixtures/invoice_items_fixtures.csv',
-            :transactions  => './fixtures/transactions_fixtures.csv'
+            :transactions  => './fixtures/transactions_fixtures.csv',
+            :customers => './fixtures/customers_fixtures.csv'
             })
     @m = se.merchants.find_by_id(12334105)
   end
@@ -35,6 +36,20 @@ class MerchantTest < Minitest::Test
     assert_equal nil, @m.items[1]
   end
 
+  def test_invoices_returns_merchants_invoices
+    invoices = @m.invoices
+    assert_equal 2, invoices[0].id
+    assert_equal 11, invoices[1].id
+    assert_equal 12, invoices[2].id
+    assert_equal 3, invoices.count
+  end
 
+  def test_customers_finds_all_merchants_customers
+    assert_equal "Ondricka", @m.customers[0].last_name
+    assert_equal "Osinski", @m.customers[1].last_name
+    assert_equal "Toy", @m.customers[2].last_name
+    assert_equal nil, @m.customers[3]
+    assert_equal 3, @m.customers.count
+  end
 
 end

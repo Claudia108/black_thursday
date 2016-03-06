@@ -6,11 +6,13 @@ require_relative '../lib/sales_engine'
 class CustomerRepositoryTest < Minitest::Test
   def setup
     se = SalesEngine.from_csv({
-      :merchants => './fixtures/merchants_fixtures.csv',
-      :items     => './fixtures/items_fixtures.csv',
-      :invoices  => './fixtures/invoices_fixtures.csv',
-      :customers => './fixtures/customers_fixtures.csv'
-      })
+            :merchants     => './fixtures/merchants_fixtures.csv',
+            :items         => './fixtures/items_fixtures.csv',
+            :invoices      => './fixtures/invoices_fixtures.csv',
+            :invoice_items => './fixtures/invoice_items_fixtures.csv',
+            :transactions  => './fixtures/transactions_fixtures.csv',
+            :customers => './fixtures/customers_fixtures.csv'
+            })
     @cr = se.customers
 # 1,Joey,Ondricka,2012-03-27 14:54:09 UTC,2012-03-27 14:54:09 UTC
   end
@@ -38,4 +40,14 @@ class CustomerRepositoryTest < Minitest::Test
   def test_find_all_by_last_name_returns_empty_array_if_none_match
     assert_equal [], @cr.find_all_by_last_name("hde")
   end
+
+  def test_find_merchants_returns_customers_merchants
+    assert_equal "NatureDots", @cr.find_merchants(1)[0].name
+    assert_equal "Shopin1901", @cr.find_merchants(1)[1].name
+    assert_equal "Candisart", @cr.find_merchants(1)[2].name
+    assert_equal "MiniatureBikez", @cr.find_merchants(1)[3].name
+    assert_equal nil, @cr.find_merchants(1)[4]
+    assert_equal 4, @cr.find_merchants(1).count
+  end
+
 end

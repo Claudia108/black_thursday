@@ -70,11 +70,12 @@ class ItemTest < Minitest::Test
 
   def test_merchant_returns_items_merchant
     se = SalesEngine.from_csv({
-            :merchants => './fixtures/merchants_fixtures.csv',
-            :items     => './fixtures/items_fixtures.csv',
+            :merchants     => './fixtures/merchants_fixtures.csv',
+            :items         => './fixtures/items_fixtures.csv',
             :invoices      => './fixtures/invoices_fixtures.csv',
             :invoice_items => './fixtures/invoice_items_fixtures.csv',
-            :transactions  => './fixtures/transactions_fixtures.csv'
+            :transactions  => './fixtures/transactions_fixtures.csv',
+            :customers => './fixtures/customers_fixtures.csv'
             })
     ir = se.items
     item = ir.find_by_id(263395237)

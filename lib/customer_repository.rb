@@ -21,6 +21,10 @@ class CustomerRepository
     end
   end
 
+  def all
+    @customers
+  end
+
   def find_merchants(customer_id)
     invoices = @sales_engine.invoices.find_all_by_customer_id(customer_id)
     merchant_ids = invoices.map { |invoice| invoice.merchant_id }

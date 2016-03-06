@@ -11,7 +11,8 @@ class SalesAnalystTest < Minitest::Test
             :items         => './fixtures/items_fixtures.csv',
             :invoices      => './fixtures/invoices_fixtures.csv',
             :invoice_items => './fixtures/invoice_items_fixtures.csv',
-            :transactions  => './fixtures/transactions_fixtures.csv'
+            :transactions  => './fixtures/transactions_fixtures.csv',
+            :customers => './fixtures/customers_fixtures.csv'
             })
     @mr = se.merchants
     @sa = SalesAnalyst.new(se)
@@ -22,13 +23,12 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_average_items_per_merchant_standard_deviation
-    assert_equal 0.53, @sa.average_items_per_merchant_standard_deviation
+    assert_equal 0.96, @sa.average_items_per_merchant_standard_deviation
   end
 
   def test_merchants_with_high_item_count
-    assert_equal 'Candisart', @sa.merchants_with_high_item_count[0].name
-    assert_equal "MiniatureBikez", @sa.merchants_with_high_item_count[1].name
-    assert_equal nil, @sa.merchants_with_high_item_count[2]
+    assert_equal "MiniatureBikez", @sa.merchants_with_high_item_count[0].name
+    assert_equal nil, @sa.merchants_with_high_item_count[1]
   end
 
   def test_average_item_price_for_merchant
@@ -50,4 +50,61 @@ class SalesAnalystTest < Minitest::Test
     assert_equal "Cache cache à la plage", @sa.golden_items[0].name
     assert_equal nil, @sa.golden_items[1]
   end
+
+  def test_average_invoices_per_merchant_returns_average
+    assert_equal 3.25, @sa.average_invoices_per_merchant
+  end
+
+  def test_all_invoices_per_merchant_returns_matching_invoice_count
+    assert_equal 3, @sa.all_invoices_per_merchant[0]
+    assert_equal 3, @sa.all_invoices_per_merchant[1]
+    assert_equal 4, @sa.all_invoices_per_merchant[2]
+    assert_equal 2, @sa.all_invoices_per_merchant[3]
+    assert_equal nil, @sa.all_invoices_per_merchant[4]
+    assert_equal 4, @sa.all_invoices_per_merchant.count
+  end
+
+  def test_average_invoices_per_merchant_standard_deviation_returns_average
+    assert_equal 0.87, @sa.average_invoices_per_merchant_standard_deviation
+  end
+
+  def test_top_merchants_by_invoice_count_returns_array_of_top_merchants
+    assert_equal nil, @sa.top_merchants_by_invoice_count[0]
+    assert_equal 0, @sa.top_merchants_by_invoice_count.count
+  end
+
+  def test_bottom_merchants_by_invoice_count_returns_array_of_bottom_merchants
+    assert_equal nil, @sa.bottom_merchants_by_invoice_count[0]
+    assert_equal 0, @sa.bottom_merchants_by_invoice_count.count
+  end
+
+  def test_weekdays_builds_hash_with_counts
+    assert_equal 7, @sa.weekday_count.count
+    assert_equal 1, @sa.weekday_count["Sunday"]
+    assert_equal 3, @sa.weekday_count["Monday"]
+    assert_equal 1, @sa.weekday_count["Tuesday"]
+    assert_equal 1, @sa.weekday_count["Wednesday"]
+    assert_equal 1, @sa.weekday_count["Thursday"]
+    assert_equal 4, @sa.weekday_count["Friday"]
+    assert_equal 2, @sa.weekday_count["Saturday"]
+  end
+
+  def test_weekday_deviation_returns_deviation_of_invoices_per_day
+#thursday invoice inserted to fixture
+    assert_equal 0.86, @sa.weekday_deviation.round(2)
+  end
+
+  def test_top_days_by_invoice_count_returns_array_of_weekdays
+    assert_equal "Friday", @sa.top_days_by_invoice_count[0]
+    assert_equal "Monday", @sa.top_days_by_invoice_count[1]
+    assert_equal nil, @sa.top_days_by_invoice_count[2]
+    assert_equal 2, @sa.top_days_by_invoice_count.count
+  end
+
+  def test_invoice_status_returns_percentage_of_shipped_returned_and_pending
+    assert_equal 30.77, @sa.invoice_status(:shipped)
+    assert_equal 23.08, @sa.invoice_status(:returned)
+    assert_equal 46.15, @sa.invoice_status(:pending)
+  end
+
 end

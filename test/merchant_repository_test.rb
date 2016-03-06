@@ -14,7 +14,8 @@ class MerchantRepositoryTest < Minitest::Test
                 :items     => './fixtures/items_fixtures.csv',
                 :invoices      => './fixtures/invoices_fixtures.csv',
                 :invoice_items => './fixtures/invoice_items_fixtures.csv',
-                :transactions  => './fixtures/transactions_fixtures.csv'
+                :transactions  => './fixtures/transactions_fixtures.csv',
+                :customers => './fixtures/customers_fixtures.csv'
                 })
      @mr = se.merchants
   end
@@ -63,4 +64,27 @@ class MerchantRepositoryTest < Minitest::Test
 
     assert_equal [], merchants
   end
+
+  def test_find_invoices_returns_merchants_invoices
+    assert_equal 2, @mr.find_invoices(12334105)[0].id
+    assert_equal 11, @mr.find_invoices(12334105)[1].id
+    assert_equal 12, @mr.find_invoices(12334105)[2].id
+    assert_equal nil, @mr.find_invoices(12334105)[3]
+    assert_equal 3, @mr.find_invoices(12334105).count
+  end
+
+  def test_find_items_returns_merchants_items
+    assert_equal 'Glitter scrabble frames', @mr.find_items(12334105)[0].name
+    assert_equal nil, @mr.find_items(12334105)[1]
+    assert_equal 1, @mr.find_items(12334105).count
+  end
+
+  def test_find_customers_returns_merchants_customers
+    assert_equal "Ondricka", @mr.find_customers(12334105)[0].last_name
+    assert_equal "Osinski", @mr.find_customers(12334105)[1].last_name
+    assert_equal "Toy", @mr.find_customers(12334105)[2].last_name
+    assert_equal nil, @mr.find_customers(12334105)[3]
+    assert_equal 3, @mr.find_customers(12334105).count
+  end
+
 end
