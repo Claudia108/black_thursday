@@ -28,7 +28,7 @@ class ItemRepository
   def find_merchant(merchant_id)
     @sales_engine.merchants.find_by_id(merchant_id)
   end
-  
+
   def all
     @items
   end
@@ -36,6 +36,10 @@ class ItemRepository
   def find_by_id(id)
     @items.find { |object| object.id == id.to_i }
   end
+
+  # def find_all_by_id(id)
+  #   @items.find_all { |object| object.id == id.to_i }
+  # end
 
   def find_by_name(expected_name)
     @items.find { |object| object.name.downcase == expected_name.downcase }

@@ -23,6 +23,10 @@ class TransactionRepository
     @transactions
   end
 
+  def find_invoice(invoice_id)
+    @sales_engine.invoices.find_by_id(invoice_id)
+  end
+
   def all
     @transactions
   end

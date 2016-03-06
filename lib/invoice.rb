@@ -12,11 +12,28 @@ class Invoice
     @updated_at = Time.parse(invoice_hash[:updated_at])
   end
 
-  # def items
-  #   @repository.find_items(@id)
-  # end
+  def items
+    @repository.find_items(@id)
+  end
 
   def merchant
     @repository.find_merchant(@merchant_id)
   end
+
+  def transactions
+    @repository.find_transactions(@id)
+  end
+
+  def customer
+    @repository.find_customer(@customer_id)
+  end
+
+  def is_paid_in_full?
+    transactions.all? { |transaction| transaction.result == "success" }
+  end
+
+  def total
+    @repository.find_total(@merchant_id)
+  end
+
 end

@@ -41,7 +41,7 @@ class SalesAnalyst
     golden_merchants = []
     merchant_ids.each do |id|
       item_count = @mr.find_items(id).count
-      if item_count >= threshold
+      if item_count > threshold
         golden_merchants << @mr.find_by_id(id)
       end
     end
@@ -140,6 +140,7 @@ class SalesAnalyst
   def weekday_count
     @weekdays = @invr.all.map { |invoice| invoice.created_at.to_date.strftime('%A') }
     weekday_count = @weekdays.reduce(Hash.new(0)) do |hash, weekday|
+      # hash[weekday] ||= 0
       hash[weekday] += 1
       hash
     end
@@ -147,11 +148,11 @@ class SalesAnalyst
 
     def  top_days_by_invoice_count
       weekday_count
-      threshold = (@weekdays.count / 7) + weekday_deviation
+      threshold = (@invr.all.count / 7.00) + weekday_deviation
       top_days = []
-      weekday_count.each do |day|
-        if day[1] > threshold
-          top_days << day[0]
+      weekday_count.each do |key, value|
+        if value > threshold
+          top_days << key
         end
       end
       top_days
@@ -159,9 +160,9 @@ class SalesAnalyst
 
     def weekday_deviation
       sum = weekday_count.reduce(0) do |sum, day|
-        sum + ((day[1] - (@weekdays.count / 7)) ** 2)
+        sum += ((day[1] - (@invr.all.count / 7.00)) ** 2)
       end
-      Math.sqrt(sum / (@invr.all.count - 1).to_f).round(2)
+      Math.sqrt(sum / (@invr.all.count - 1).to_f)
     end
 
     def invoice_status(status)
