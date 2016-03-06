@@ -29,11 +29,12 @@ class Invoice
   end
 
   def is_paid_in_full?
-    transactions.all? { |transaction| transaction.result == "success" }
+      transactions.any? { |transaction| transaction.result == "success" }
   end
 
   def total
-    @repository.find_total(@merchant_id)
+    #do not count items that have not been paid in full
+    @repository.find_total(@id)
   end
 
 end

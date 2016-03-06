@@ -16,7 +16,7 @@ class InvoiceTest < Minitest::Test
             })
     ir = se.invoices
     @invoice = ir.find_by_id(1)
-    @unpaid_invoice = ir.find_by_id(6)
+    @invoice2 = ir.find_by_id(6)
 
     # @invoice = Invoice.new({
     #   id: 1,
@@ -72,12 +72,13 @@ class InvoiceTest < Minitest::Test
   end
 
   def test_is_paid_in_full_returns_boolean
-    refute @unpaid_invoice.is_paid_in_full?
+    assert @invoice2.is_paid_in_full?
     assert @invoice.is_paid_in_full?
   end
 
   def test_total_returns_total_price_of_invoice
-    assert_equal 12.0, @invoice.total
+    assert_equal 7604.23, @invoice.total.to_f
+    assert_equal BigDecimal, @invoice.total.class
   end
 
 end

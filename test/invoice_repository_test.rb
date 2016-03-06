@@ -92,7 +92,8 @@ end
   end
 
   def test_find_total_returns_invoice_total
-    assert_equal 12.00, @ir.find_total(14784142)
+    assert_equal 7604.23, @ir.find_total(1).to_f
+    assert_equal BigDecimal, @ir.find_total(1).class
   end
 
 end

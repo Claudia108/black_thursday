@@ -24,7 +24,7 @@ class TransactionRepositoryTest < Minitest::Test
     assert_equal 1, all[0].id
     assert_equal 2, all[1].id
     assert_equal 3, all[2].id
-    assert_equal 13, all.count
+    assert_equal 14, all.count
   end
 
   def test_find_by_id_returns_ftrst_transaction_with_matching_id
@@ -48,7 +48,7 @@ class TransactionRepositoryTest < Minitest::Test
   end
 
   def test_find_all_by_credit_card_number_returns_array_of_transactions_with_matching_id
-    all = @tr.find_all_by_credit_card_number("4068631943231473")
+    all = @tr.find_all_by_credit_card_number(4068631943231473)
     assert_equal 1, all[0].id
     assert_equal 3, all.count
   end
@@ -62,7 +62,7 @@ class TransactionRepositoryTest < Minitest::Test
     assert_equal 2, all[1].id
     assert_equal 3, all[2].id
     assert_equal 4, all[3].id
-    assert_equal 11, all.count
+    assert_equal 12, all.count
   end
 
   def test_find_all_by_result_returns_array_of_transactions_with_matching_status_failed

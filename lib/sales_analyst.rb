@@ -8,6 +8,9 @@ class SalesAnalyst
     @invr = @se.invoices
   end
 
+  def top_buyers(number=20)
+  end
+
   def average_items_per_merchant
     (@ir.all.count.to_f / @mr.all.count.to_f).round(2)
 

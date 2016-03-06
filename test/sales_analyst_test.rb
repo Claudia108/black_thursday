@@ -52,7 +52,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_average_invoices_per_merchant_returns_average
-    assert_equal 3.0, @sa.average_invoices_per_merchant
+    assert_equal 3.25, @sa.average_invoices_per_merchant
   end
 
   def test_all_invoices_per_merchant_returns_matching_invoice_count
@@ -65,7 +65,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_average_invoices_per_merchant_standard_deviation_returns_average
-    assert_equal 0.82, @sa.average_invoices_per_merchant_standard_deviation
+    assert_equal 0.87, @sa.average_invoices_per_merchant_standard_deviation
   end
 
   def test_top_merchants_by_invoice_count_returns_array_of_top_merchants
@@ -91,7 +91,7 @@ class SalesAnalystTest < Minitest::Test
 
   def test_weekday_deviation_returns_deviation_of_invoices_per_day
 #thursday invoice inserted to fixture
-    assert_equal 1.21, @sa.weekday_deviation
+    assert_equal 0.86, @sa.weekday_deviation.round(2)
   end
 
   def test_top_days_by_invoice_count_returns_array_of_weekdays
@@ -102,9 +102,9 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_invoice_status_returns_percentage_of_shipped_returned_and_pending
-    assert_equal 33.33, @sa.invoice_status(:shipped)
-    assert_equal 16.67, @sa.invoice_status(:returned)
-    assert_equal 50.0, @sa.invoice_status(:pending)
+    assert_equal 30.77, @sa.invoice_status(:shipped)
+    assert_equal 23.08, @sa.invoice_status(:returned)
+    assert_equal 46.15, @sa.invoice_status(:pending)
   end
 
 end

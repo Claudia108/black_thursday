@@ -2,6 +2,8 @@ require 'pry'
 require_relative "invoice"
 require_relative "sales_engine"
 require 'csv'
+require 'bigdecimal/util'
+require 'bigdecimal'
 
 class InvoiceRepository
   attr_reader :sales_engine, :invoices
@@ -22,9 +24,10 @@ class InvoiceRepository
     @invoices
   end
 
-  def find_total(merchant_id)
-    items = @sales_engine.merchants.find_items(merchant_id)
-    items.reduce(0) { |sum, item| sum += item.unit_price.to_f }
+  def find_total(invoice_id)
+    invoice_items = @sales_engine.invoice_items.find_all_by_invoice_id(invoice_id)
+    total = invoice_items.reduce(0) { |sum, item| sum += item.unit_price_per_dollars * item.quantity }
+    total.to_d
   end
 
   def find_transactions(invoice_id)
