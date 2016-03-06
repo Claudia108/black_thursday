@@ -11,3 +11,4 @@ id,customer_id,merchant_id,status,created_at,updated_at
 10,1,12334113,pending,2014-04-13,2015-01-20
 11,2,12334105,returned,2008-01-07,2014-05-30
 12,3,12334105,returned,2014-05-06,2014-10-06
+13,9,78973248,returned,2014-05-01,2014-05-01

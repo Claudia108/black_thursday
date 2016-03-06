@@ -78,4 +78,13 @@ class MerchantRepositoryTest < Minitest::Test
     assert_equal nil, @mr.find_items(12334105)[1]
     assert_equal 1, @mr.find_items(12334105).count
   end
+
+  def test_find_customers_returns_merchants_customers
+    assert_equal "Ondricka", @mr.find_customers(12334105)[0].last_name
+    assert_equal "Osinski", @mr.find_customers(12334105)[1].last_name
+    assert_equal "Toy", @mr.find_customers(12334105)[2].last_name
+    assert_equal nil, @mr.find_customers(12334105)[3]
+    assert_equal 3, @mr.find_customers(12334105).count
+  end
+
 end

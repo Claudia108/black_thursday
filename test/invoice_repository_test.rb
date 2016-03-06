@@ -24,7 +24,7 @@ class InvoiceRepositoryTest < Minitest::Test
     all = @ir.all
     assert_equal 1, all[0].id
     assert_equal 2, all[1].id
-    assert_equal 12, all.count
+    assert_equal 13, all.count
   end
 
   def test_find_by_id_returns_first_invoice_with_matching_id
@@ -72,5 +72,27 @@ class InvoiceRepositoryTest < Minitest::Test
   def test_find_merchant_returns_invoices_merchant
     assert_equal "NatureDots", @ir.find_merchant(14784142).name
   end
-  
+
+  def test_find_customer_returns_invoices_customer
+    assert_equal "Joey", @ir.find_customer(1).first_name
+  end
+
+  def test_find_items_returns_invoices_item_and_removes_nil_items
+    assert_equal 263396279, @ir.find_items(1)[0].id
+    assert_equal 263396255, @ir.find_items(1)[1].id
+    assert_equal 263396255, @ir.find_items(1)[2].id
+    assert_equal nil, @ir.find_items(1)[3]
+    assert_equal 3, @ir.find_items(1).count
+end
+
+  def test_find_transactions_returns_invoices_transactions
+    assert_equal 13, @ir.find_transactions(1)[0].id
+    assert_equal nil, @ir.find_transactions(1)[1]
+    assert_equal 1, @ir.find_transactions(1).count
+  end
+
+  def test_find_total_returns_invoice_total
+    assert_equal 12.00, @ir.find_total(14784142)
+  end
+
 end

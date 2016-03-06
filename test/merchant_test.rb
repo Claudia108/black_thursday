@@ -44,4 +44,12 @@ class MerchantTest < Minitest::Test
     assert_equal 3, invoices.count
   end
 
+  def test_customers_finds_all_merchants_customers
+    assert_equal "Ondricka", @m.customers[0].last_name
+    assert_equal "Osinski", @m.customers[1].last_name
+    assert_equal "Toy", @m.customers[2].last_name
+    assert_equal nil, @m.customers[3]
+    assert_equal 3, @m.customers.count
+  end
+
 end

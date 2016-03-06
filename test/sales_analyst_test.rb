@@ -79,17 +79,19 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_weekdays_builds_hash_with_counts
-    assert_equal 6, @sa.weekday_count.count
+    assert_equal 7, @sa.weekday_count.count
     assert_equal 1, @sa.weekday_count["Sunday"]
     assert_equal 3, @sa.weekday_count["Monday"]
     assert_equal 1, @sa.weekday_count["Tuesday"]
     assert_equal 1, @sa.weekday_count["Wednesday"]
+    assert_equal 1, @sa.weekday_count["Thursday"]
     assert_equal 4, @sa.weekday_count["Friday"]
     assert_equal 2, @sa.weekday_count["Saturday"]
   end
 
   def test_weekday_deviation_returns_deviation_of_invoices_per_day
-    assert_equal 1.13, @sa.weekday_deviation
+#thursday invoice inserted to fixture
+    assert_equal 1.21, @sa.weekday_deviation
   end
 
   def test_top_days_by_invoice_count_returns_array_of_weekdays
