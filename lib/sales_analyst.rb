@@ -6,6 +6,8 @@ class SalesAnalyst
     @mr = @se.merchants
     @ir = @se.items
     @invr = @se.invoices
+    @cr = @se.customers
+    @initr = @se.invoice_items
   end
 
   def top_buyers(number=20)
@@ -171,6 +173,26 @@ class SalesAnalyst
     def invoice_status(status)
       count = @invr.all.count { |invoice| invoice.status == status }
       ((count.to_f / @invr.all.count.to_f) * 100).round(2)
+    end
+
+    def top_buyers(id=20)
+      invoices = @invr.find_all_by_customer_id(id)
+      # this returns an empty array. Why?
+      inv_items = invoices.map do |inv_id|
+        @initr.find_all_by_invoice_id(inv_id)
+      end
+      # find all invoice items with matching invoice_id
+      amount_per_customer = inv_items.map do |inv_item|
+        inv_item.unit_price * inv_item.quantity
+        # this should return total amount per inv_item
+      end
+
+      amount_per_customer.map |amount|
+      @invr 
+      # total amount per invoice item needs to be summed up by customer
+      # do I need to trace back through invoice?
+      # amount per costomer needs to be sorted by amount
+      # output customer objects in array
     end
 
 end

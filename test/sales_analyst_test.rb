@@ -14,12 +14,11 @@ class SalesAnalystTest < Minitest::Test
             :transactions  => './fixtures/transactions_fixtures.csv',
             :customers => './fixtures/customers_fixtures.csv'
             })
-    @mr = se.merchants
     @sa = SalesAnalyst.new(se)
   end
 
   def test_average_items_per_merchant_returns_float
-    assert_equal  1.75, @sa.average_items_per_merchant
+    assert_equal 1.75, @sa.average_items_per_merchant
   end
 
   def test_average_items_per_merchant_standard_deviation
@@ -105,6 +104,25 @@ class SalesAnalystTest < Minitest::Test
     assert_equal 30.77, @sa.invoice_status(:shipped)
     assert_equal 23.08, @sa.invoice_status(:returned)
     assert_equal 46.15, @sa.invoice_status(:pending)
+  end
+
+  def test_top_buyers_returns_20_buyers_who_spent_the_most
+    se = SalesEngine.from_csv({
+            :merchants     => '../data/merchants.csv',
+            :items         => '../data/items.csv',
+            :invoices      => '../data/invoices.csv',
+            :invoice_items => '../data/invoice_items.csv',
+            :transactions  => '../data/transactions.csv',
+            :customers     => '../data/customers.csv'
+            })
+    sa = SalesAnalyst.new(se)
+
+    assert_equal 20, sa.top_buyers.count
+    assert_equal "name", sa.top_buyers[0].first_name
+  end
+
+  def test_top_buyers_returns_number_of_buyers_designated
+    assert_equal 2, @sa.top_buyers(2).count
   end
 
 end
