@@ -44,4 +44,13 @@ class CustomerTest < Minitest::Test
     assert_equal "MiniatureBikez", @c.merchants[3].name
   end
 
+  def test_invoices_finds_invoice_for_customer
+    assert_equal 1, @c.invoices[0].id
+    assert_equal 2, @c.invoices[1].id
+    assert_equal 3, @c.invoices[2].id
+    assert_equal 10, @c.invoices[3].id
+    assert_equal nil, @c.invoices[4]
+    assert_equal Invoice, @c.invoices[0].class
+    assert_equal 4, @c.invoices.count
+  end
 end

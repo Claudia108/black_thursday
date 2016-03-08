@@ -14,6 +14,7 @@ class SalesAnalystTest < Minitest::Test
             :transactions  => './fixtures/transactions_fixtures.csv',
             :customers => './fixtures/customers_fixtures.csv'
             })
+    @customer = se.customers.find_by_id(1)
     @sa = SalesAnalyst.new(se)
   end
 
@@ -107,6 +108,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_top_buyers_returns_20_buyers_who_spent_the_most
+    skip
     se = SalesEngine.from_csv({
             :merchants     => '../data/merchants.csv',
             :items         => '../data/items.csv',
@@ -116,9 +118,36 @@ class SalesAnalystTest < Minitest::Test
             :customers     => '../data/customers.csv'
             })
     sa = SalesAnalyst.new(se)
-
+    customer = se.customers.find_by_id(1)
     assert_equal 20, sa.top_buyers.count
-    assert_equal "name", sa.top_buyers[0].first_name
+    assert_equal BigDecimal, sa.top_buyers[customer].class
+  end
+
+  def test_connect_customers_and_invoices_builds_hash_with_customers_pointing_to_invoices
+    skip
+    assert_equal Array, @sa.connect_customers_and_invoices[@customer].class
+    assert_equal Invoice, @sa.connect_customers_and_invoices[@customer][0].class
+    assert_equal 1, @sa.connect_customers_and_invoices[@customer][0].id
+  end
+
+  def test_find_invoice_items_replaces_invoices_with_invoice_items
+    skip
+    assert_equal Array, @sa.find_invoice_items.class
+    assert_equal Array, @sa.find_invoice_items[0].class
+    assert_equal Array, @sa.find_invoice_items[0][0].class
+    assert_equal InvoiceItem, @sa.find_invoice_items[0][0][0].class
+  end
+
+  def test_connect_customers_and_invoices_builds_hash_with_customers_pointing_to_invoices
+    assert_equal Hash, @sa.connect_customers_and_invoices.class
+    assert_equal Customer, @sa.connect_customers_and_invoices.keys[0].class
+    assert_equal Array, @sa.connect_customers_and_invoices.values[0].class
+    assert_equal Invoice, @sa.connect_customers_and_invoices.values[0][0].class
+  end
+
+  def test_sum_invoices_for_customers_returns_total_spent_per_customer
+    assert_equal Hash, @sa.sum_invoices_for_customers.class
+    assert_equal 1580.18, @sa.sum_invoices_for_customers.values[1].to_f.round(2)
   end
 
   def test_top_buyers_returns_number_of_buyers_designated

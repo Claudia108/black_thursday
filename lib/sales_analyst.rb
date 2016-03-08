@@ -175,24 +175,83 @@ class SalesAnalyst
       ((count.to_f / @invr.all.count.to_f) * 100).round(2)
     end
 
-    def top_buyers(id=20)
-      invoices = @invr.find_all_by_customer_id(id)
-      # this returns an empty array. Why?
-      inv_items = invoices.map do |inv_id|
-        @initr.find_all_by_invoice_id(inv_id)
-      end
-      # find all invoice items with matching invoice_id
-      amount_per_customer = inv_items.map do |inv_item|
-        inv_item.unit_price * inv_item.quantity
-        # this should return total amount per inv_item
-      end
+    def top_buyers(count = 20)
+      sorted = sum_invoices_for_customers.sort_by { |customer, total| total }
+      # customer_spending[0..(count - 1)]
+    end
 
-      amount_per_customer.map |amount|
-      @invr 
+    def connect_customers_and_invoices
+      customer_invoices = {}
+      @cr.all.each do |customer|
+        customer_invoices[customer] = customer.invoices
+      end
+      customer_invoices
+      # binding.pry
+    end
+
+    def sum_invoices_for_customers
+      customer_totals = {}
+      connect_customers_and_invoices.each do |customer, invoices|
+        if invoices == []
+          invoices = 0
+        else
+        totals = invoices.map do |invoice|
+            invoice = invoice.total
+        end
+      end
+         customer_totals[customer] = totals.reduce(:+)
+      end
+      customer_totals
+    end
+
+    # def find_invoice_total(invoice_id)
+    #   invoice_items = @initr.find_all_by_invoice_id(invoice_id)
+    #   invoice_item_costs = invoice_items.map { |invoice_item| invoice_item.quantity * invoice_item.unit_price }
+    #   invoice_item_costs.reduce(:+)
+    # end
+
+    # def connect_customers_and_invoices
+    #   customers = {}
+    #   @cr.all.each do |customer|
+    #     customers[customer] = @invr.find_all_by_customer_id(customer.id)
+    #   end
+    #   customers
+    # end
+    #
+    # def find_invoice_items
+    #   #customer => [invoice, invoice]
+    #   connect_customers_and_invoices.map do |customer, invoices|
+    #     invoice_items = invoices.map do |invoice|
+    #       @initr.find_all_by_invoice_id(invoice.id)
+    #       #customer => [[invoice-item, invoice-item],[]]
+    #     end
+    #   end
+    # end
+
+    # def something
+    #       summed_invoices.map do |invoice_item|
+    #       invoice_item.unit_price * invoice_item.quantity
+    #       end
+    #       summed_costs.reduce(:+)
+    #     sum_of_invoices.compact.reduce(:+)
+    # end
+
+      # invoices = @invr.all
+      # .find_all_by_customer_id(id)
+      # # this returns an empty array. Why?
+      # inv_items = invoices.map do |inv_id|
+      #   @initr.find_all_by_invoice_id(inv_id)
+      # end
+      # # find all invoice items with matching invoice_id
+      # amount_per_customer = inv_items.map do |inv_item|
+      #   inv_item.unit_price * inv_item.quantity
+      #   # this should return total amount per inv_item
+
+      # amount_per_customer.map |amount|
+      # @invr
       # total amount per invoice item needs to be summed up by customer
       # do I need to trace back through invoice?
       # amount per costomer needs to be sorted by amount
       # output customer objects in array
-    end
 
 end

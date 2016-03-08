@@ -50,4 +50,14 @@ class CustomerRepositoryTest < Minitest::Test
     assert_equal 4, @cr.find_merchants(1).count
   end
 
+  def test_find_invoices_finds_invoices_for_a_customer
+    assert_equal 1, @cr.find_invoices(1)[0].id
+    assert_equal 2, @cr.find_invoices(1)[1].id
+    assert_equal 3, @cr.find_invoices(1)[2].id
+    assert_equal 10, @cr.find_invoices(1)[3].id
+    assert_equal nil, @cr.find_invoices(1)[4]
+    assert_equal Invoice, @cr.find_invoices(1)[0].class
+    assert_equal 4, @cr.find_invoices(1).count
+  end
+
 end

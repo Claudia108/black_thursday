@@ -15,4 +15,8 @@ class Customer
     @repository.find_merchants(@id)
   end
 
+  def invoices
+    @repository.find_invoices(@id)
+  end
+
 end
