@@ -129,6 +129,15 @@ class SalesAnalyst
     # deviation = Math.sqrt(sum / (@mr.all.count - 1).to_f).round(2)
   end
 
+  def weekday_deviation
+    day_average = (@invr.all.count / 7.00)
+    compute_deviation(@invr, weekday_count, day_average)
+    # sum = weekday_count.reduce(0) do |sum, day|
+    #   sum += ((day[1] - (@invr.all.count / 7.00)) ** 2)
+    # end
+    # Math.sqrt(sum / (@invr.all.count - 1).to_f)
+  end
+
   def top_merchants_by_invoice_count
     threshold = average_invoices_per_merchant + (average_invoices_per_merchant_standard_deviation * 2)
     merchant_ids = @mr.all.map { |merchant| merchant.id }
@@ -163,7 +172,7 @@ class SalesAnalyst
     end
   end
 
-    def  top_days_by_invoice_count
+    def top_days_by_invoice_count
       weekday_count
       threshold = (@invr.all.count / 7.00) + weekday_deviation
       top_days = []
@@ -175,12 +184,6 @@ class SalesAnalyst
       top_days
     end
 
-    def weekday_deviation
-      sum = weekday_count.reduce(0) do |sum, day|
-        sum += ((day[1] - (@invr.all.count / 7.00)) ** 2)
-      end
-      Math.sqrt(sum / (@invr.all.count - 1).to_f)
-    end
 
     def invoice_status(status)
       count = @invr.all.count { |invoice| invoice.status == status }
@@ -188,9 +191,10 @@ class SalesAnalyst
     end
 
     def top_buyers(count = 20)
-      sorted = sum_invoices_for_customers.sort_by { |customer, total| -total }
-      customers = sorted.map(&:first) #{ |customer_and_total| customer_and_total[0] }
-      customers[0..(count - 1)]
+      sorted = sum_invoices_for_customers.sort_by { |customer, total| total }
+      customers = sorted.map(&:last) #{ |customer_and_total| customer_and_total[0] }
+      # binding.pry
+      customers[(-count + 1)..-1]
     end
 
     def connect_customers_and_invoices
@@ -199,11 +203,17 @@ class SalesAnalyst
         customer_invoices[customer] = customer.invoices
       end
       customer_invoices
-      # binding.pry
     end
+  def select_paid_invoices
+    paid_customer_invoices = {}
+    connect_customers_and_invoices.each do |customer, invoices|
+      paid_invoices = invoices.find_all { |invoice| invoice.is_paid_in_full? }
+      paid_customer_invoices[customer] = paid_invoices
+    end
+  end
 
   def sum_invoices_for_customers
-    connect_customers_and_invoices.reduce(Hash.new(0)) do |memo, customer_and_invoices|
+    select_paid_invoices.reduce(Hash.new(0)) do |memo, customer_and_invoices|
       customer = customer_and_invoices.first
       invoices = customer_and_invoices.last
       memo[customer] = compute_invoice_totals(invoices)
@@ -236,7 +246,7 @@ class SalesAnalyst
   end
 
   def customers_with_unpaid_invoices
-    unpaid_invoices = @invr.all.find_all {|invoice| invoice.is_paid_in_full? == false}
+    unpaid_invoices = @invr.all.find_all { |invoice| invoice.is_paid_in_full? == false}
     customers = unpaid_invoices.map do |invoice|
       invoice.customer
     end
@@ -244,8 +254,53 @@ class SalesAnalyst
   end
 
   def best_invoice_by_revenue
-    @invr.all.max_by { |invoice| invoice.total }
+    paid_invoices = @invr.all.find_all { |invoice| invoice.is_paid_in_full? }
+    paid_invoices.max_by { |invoice| invoice.total }
   end
+
+  # def best_invoice_by_quantity
+  #   paid_invoices = @invr.all.find_all { |invoice| invoice.is_paid_in_full? }
+  #   invoice_items = paid_invoices.map { |invoice| @initr.find_all_by_invoice_id(invoice.id) }
+  #   invoice_items.map { |invoice_item| invoice_item.quantity }
+  # end
+
+  def top_merchant_for_customer(customer_id)
+    sorted = find_merchants_items_quantity(customer_id).sort_by { |k,v| v }
+    sorted[-1][0]
+  end
+
+  def group_invoices_by_merchant(customer_id)
+    customer = @cr.find_by_id(customer_id)
+    merchants = customer.merchants
+    merchant_invoices = merchants.reduce(Hash.new(0)) do |memo, merchant|
+      memo[merchant] = merchant.invoices
+      memo
+    end
+  end
+
+  def find_invoices_from_customer(customer_id)
+    customers_merchants_invoices = {}
+    group_invoices_by_merchant(customer_id).each do |merchant, invoices|
+      customers_merchants_invoices[merchant] = invoices.find_all { |invoice| invoice.customer_id == customer_id }
+    end
+  end
+
+  def find_merchants_invoice_items(customer_id)
+    customers_merchants_invoice_items = {}
+    find_invoices_from_customer(customer_id).each do |merchant, invoices|
+      customers_merchants_invoice_items[merchant] = (invoices.map { |invoice| @initr.find_all_by_invoice_id(invoice.id) }).flatten
+    end
+    customers_merchants_invoice_items
+  end
+
+  def find_merchants_items_quantity(customer_id)
+    customer_merchants_items_quantity = {}
+    find_merchants_invoice_items(customer_id).each do |merchant, invoice_items|
+      customer_merchants_items_quantity[merchant] = invoice_items.reduce(0) { |sum, invoice_item| sum += invoice_item.quantity }
+    end
+    customer_merchants_items_quantity
+  end
+
 
 
 end
