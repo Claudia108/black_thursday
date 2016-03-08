@@ -120,22 +120,8 @@ class SalesAnalystTest < Minitest::Test
     sa = SalesAnalyst.new(se)
     customer = se.customers.find_by_id(1)
     assert_equal 20, sa.top_buyers.count
-    assert_equal BigDecimal, sa.top_buyers[customer].class
-  end
-
-  def test_connect_customers_and_invoices_builds_hash_with_customers_pointing_to_invoices
-    skip
-    assert_equal Array, @sa.connect_customers_and_invoices[@customer].class
-    assert_equal Invoice, @sa.connect_customers_and_invoices[@customer][0].class
-    assert_equal 1, @sa.connect_customers_and_invoices[@customer][0].id
-  end
-
-  def test_find_invoice_items_replaces_invoices_with_invoice_items
-    skip
-    assert_equal Array, @sa.find_invoice_items.class
-    assert_equal Array, @sa.find_invoice_items[0].class
-    assert_equal Array, @sa.find_invoice_items[0][0].class
-    assert_equal InvoiceItem, @sa.find_invoice_items[0][0][0].class
+    assert_equal Array, sa.top_buyers.class
+    assert_equal Customer, sa.top_buyers[0].class
   end
 
   def test_connect_customers_and_invoices_builds_hash_with_customers_pointing_to_invoices
@@ -143,6 +129,7 @@ class SalesAnalystTest < Minitest::Test
     assert_equal Customer, @sa.connect_customers_and_invoices.keys[0].class
     assert_equal Array, @sa.connect_customers_and_invoices.values[0].class
     assert_equal Invoice, @sa.connect_customers_and_invoices.values[0][0].class
+    assert_equal 1, @sa.connect_customers_and_invoices[@customer][0].id
   end
 
   def test_sum_invoices_for_customers_returns_total_spent_per_customer
@@ -152,6 +139,28 @@ class SalesAnalystTest < Minitest::Test
 
   def test_top_buyers_returns_number_of_buyers_designated
     assert_equal 2, @sa.top_buyers(2).count
+  end
+
+  def test_one_time_buyers_returns_array_with_customers_with_one_invoice
+    assert_equal Array, @sa.one_time_buyers.class
+    assert_equal 1, @sa.one_time_buyers.count
+    assert_equal 4, @sa.one_time_buyers[0].id
+  end
+
+  def test_one_time_buyers_item_returns_items_on_invoice
+    assert_equal Array, @sa.one_time_buyers_item.class
+    assert_equal 263396013, @sa.one_time_buyers_item[0].id
+  end
+
+  def test_customers_with_unpaid_invoices_returns_array_of_customers_with_unpaid_invoices
+    assert_equal "Mariah", @sa.customers_with_unpaid_invoices[0].first_name
+    assert_equal Array, @sa.customers_with_unpaid_invoices.class
+    assert_equal 1, @sa.customers_with_unpaid_invoices.count
+  end
+
+  def test_best_invoice_by_revenue_returns_invoice
+    assert_equal Invoice, @sa.best_invoice_by_revenue.class
+    assert_equal 3, @sa.best_invoice_by_revenue.id   
   end
 
 end

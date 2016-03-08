@@ -32,12 +32,6 @@ class SalesAnalyst
     item_count_deviation(item_count)
   end
 
-  def item_count_deviation(item_count)
-    sum = item_count.reduce(0) do |sum, count|
-      sum + ((count - average_items_per_merchant) ** 2)
-    end
-    deviation = Math.sqrt(sum / (@mr.all.count - 1)).round(2)
-  end
 
   def merchants_with_high_item_count
     #how can we use map if nil gets returned when threshold isnt met
@@ -87,12 +81,6 @@ class SalesAnalyst
     # item_prices.flatten
   end
 
-  def price_deviation
-    sum = find_all_item_prices.reduce(0) do |sum, price|
-      sum + ((price - average_average_price_per_merchant) ** 2)
-    end
-    deviation = Math.sqrt(sum / (@ir.all.count - 1)).round(2)
-  end
 
   def average_invoices_per_merchant
     (@invr.all.count.to_f / @mr.all.count.to_f).round(2)
@@ -110,11 +98,35 @@ class SalesAnalyst
     @mr.all.map { |merchant| merchant.invoices.count}
   end
 
-  def average_invoices_per_merchant_standard_deviation
-    sum = all_invoices_per_merchant.reduce(0) do |sum, count|
-      sum + ((count - average_invoices_per_merchant) ** 2)
+  def item_count_deviation(item_count)
+    # sum = item_count.reduce(0) do |sum, count|
+    #   sum + ((count - average_items_per_merchant) ** 2)
+    # end
+    # deviation = Math.sqrt(sum / (@mr.all.count - 1)).round(2)
+    compute_deviation(@mr, item_count, average_items_per_merchant)
+  end
+
+  def compute_deviation(repository, elements, average)
+    sum = elements.reduce(0) do |sum, element|
+      sum + ((element - average) ** 2)
     end
-    deviation = Math.sqrt(sum / (@mr.all.count - 1).to_f).round(2)
+    deviation = Math.sqrt(sum / (repository.all.count - 1)).round(2)
+  end
+
+  def price_deviation
+    # sum = find_all_item_prices.reduce(0) do |sum, price|
+    #   sum + ((price - average_average_price_per_merchant) ** 2)
+    # end
+    compute_deviation(@ir, find_all_item_prices, average_average_price_per_merchant)
+    # deviation = Math.sqrt(sum / (@ir.all.count - 1)).round(2)
+  end
+
+  def average_invoices_per_merchant_standard_deviation
+    # sum = all_invoices_per_merchant.reduce(0) do |sum, count|
+    #   sum + ((count - average_invoices_per_merchant) ** 2)
+    # end
+    compute_deviation(@mr, all_invoices_per_merchant, average_invoices_per_merchant)
+    # deviation = Math.sqrt(sum / (@mr.all.count - 1).to_f).round(2)
   end
 
   def top_merchants_by_invoice_count
@@ -176,8 +188,9 @@ class SalesAnalyst
     end
 
     def top_buyers(count = 20)
-      sorted = sum_invoices_for_customers.sort_by { |customer, total| total }
-      # customer_spending[0..(count - 1)]
+      sorted = sum_invoices_for_customers.sort_by { |customer, total| -total }
+      customers = sorted.map(&:first) #{ |customer_and_total| customer_and_total[0] }
+      customers[0..(count - 1)]
     end
 
     def connect_customers_and_invoices
@@ -189,69 +202,50 @@ class SalesAnalyst
       # binding.pry
     end
 
-    def sum_invoices_for_customers
-      customer_totals = {}
-      connect_customers_and_invoices.each do |customer, invoices|
-        if invoices == []
-          invoices = 0
-        else
-        totals = invoices.map do |invoice|
-            invoice = invoice.total
-        end
-      end
-         customer_totals[customer] = totals.reduce(:+)
-      end
-      customer_totals
+  def sum_invoices_for_customers
+    connect_customers_and_invoices.reduce(Hash.new(0)) do |memo, customer_and_invoices|
+      customer = customer_and_invoices.first
+      invoices = customer_and_invoices.last
+      memo[customer] = compute_invoice_totals(invoices)
+      memo
     end
+  end
 
-    # def find_invoice_total(invoice_id)
-    #   invoice_items = @initr.find_all_by_invoice_id(invoice_id)
-    #   invoice_item_costs = invoice_items.map { |invoice_item| invoice_item.quantity * invoice_item.unit_price }
-    #   invoice_item_costs.reduce(:+)
-    # end
+  def compute_invoice_totals(invoices)
+    invoices.map do |invoice|
+      invoice = invoice.total
+    end.reduce(0, :+)
+  end
 
-    # def connect_customers_and_invoices
-    #   customers = {}
-    #   @cr.all.each do |customer|
-    #     customers[customer] = @invr.find_all_by_customer_id(customer.id)
-    #   end
-    #   customers
-    # end
-    #
-    # def find_invoice_items
-    #   #customer => [invoice, invoice]
-    #   connect_customers_and_invoices.map do |customer, invoices|
-    #     invoice_items = invoices.map do |invoice|
-    #       @initr.find_all_by_invoice_id(invoice.id)
-    #       #customer => [[invoice-item, invoice-item],[]]
-    #     end
-    #   end
-    # end
+  def one_time_buyers
+    one_timers = []
+    connect_customers_and_invoices.each do |customer, invoices|
+      if invoices.count == 1
+        one_timers << customer
+      end
+    end
+    one_timers
+  end
 
-    # def something
-    #       summed_invoices.map do |invoice_item|
-    #       invoice_item.unit_price * invoice_item.quantity
-    #       end
-    #       summed_costs.reduce(:+)
-    #     sum_of_invoices.compact.reduce(:+)
-    # end
+  def one_time_buyers_item
+    invoice = one_time_buyers.map do |customer|
+      customer.invoices
+    end
+    items = invoice[0][0].items
+    items.flatten
+  end
 
-      # invoices = @invr.all
-      # .find_all_by_customer_id(id)
-      # # this returns an empty array. Why?
-      # inv_items = invoices.map do |inv_id|
-      #   @initr.find_all_by_invoice_id(inv_id)
-      # end
-      # # find all invoice items with matching invoice_id
-      # amount_per_customer = inv_items.map do |inv_item|
-      #   inv_item.unit_price * inv_item.quantity
-      #   # this should return total amount per inv_item
+  def customers_with_unpaid_invoices
+    unpaid_invoices = @invr.all.find_all {|invoice| invoice.is_paid_in_full? == false}
+    customers = unpaid_invoices.map do |invoice|
+      invoice.customer
+    end
+    customers.compact
+  end
 
-      # amount_per_customer.map |amount|
-      # @invr
-      # total amount per invoice item needs to be summed up by customer
-      # do I need to trace back through invoice?
-      # amount per costomer needs to be sorted by amount
-      # output customer objects in array
+  def best_invoice_by_revenue
+    @invr.all.max_by { |invoice| invoice.total }
+  end
+
 
 end
