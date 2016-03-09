@@ -109,42 +109,42 @@ class SalesAnalystTest < Minitest::Test
     assert_equal 17247.86, @sa.total_revenue_by_date(date).to_f
   end
 
-def test_top_revenue_earners_returns_top_20_merchants_by_default
-  assert_equal "Candisart", @sa.top_revenue_earners[0].name
-  assert_equal 4, @sa.top_revenue_earners.count
-  #only 4 merchants in fixture
-end
+  def test_top_revenue_earners_returns_top_20_merchants_by_default
+    assert_equal "Candisart", @sa.top_revenue_earners[0].name
+    assert_equal 4, @sa.top_revenue_earners.count
+    #only 4 merchants in fixture
+  end
 
-def test_top_revenue_earners_returned_sorted_array_of_merchats
-  assert_equal 4, @sa.top_revenue_earners.count
-end
+  def test_top_revenue_earners_returned_sorted_array_of_merchats
+    assert_equal 4, @sa.top_revenue_earners.count
+  end
 
-def test_top_revenue_earners_returns_number_of_merchants_specified
-  assert_equal "Candisart", @sa.top_revenue_earners(3)[0].name
-  assert_equal 3, @sa.top_revenue_earners(3).count
-end
+  def test_top_revenue_earners_returns_number_of_merchants_specified
+    assert_equal "Candisart", @sa.top_revenue_earners(3)[0].name
+    assert_equal 3, @sa.top_revenue_earners(3).count
+  end
 
-def test_merchants_with_revenue_returns_array_of_sorted_merchants
-  assert_equal Hash, @sa.merchants_with_revenue.class
-  assert_equal 4, @sa.merchants_with_revenue.count
-end
+  def test_merchants_with_revenue_returns_array_of_sorted_merchants
+    assert_equal Hash, @sa.merchants_with_revenue.class
+    assert_equal 4, @sa.merchants_with_revenue.count
+  end
 
-def test_merchants_with_pending_invoices_returns_array_of_merchants
-  assert_equal "MiniatureBikez", @sa.merchants_with_pending_invoices[0].name
-  assert_equal 1, @sa.merchants_with_pending_invoices.count
-end
+  def test_merchants_with_pending_invoices_returns_array_of_merchants
+    assert_equal "MiniatureBikez", @sa.merchants_with_pending_invoices[0].name
+    assert_equal 1, @sa.merchants_with_pending_invoices.count
+  end
 
-def test_merchants_with_only_one_item_returns_array_of_merchants
-  assert_equal "Shopin1901", @sa.merchants_with_only_one_item[0].name
-end
+  def test_merchants_with_only_one_item_returns_array_of_merchants
+    assert_equal "Shopin1901", @sa.merchants_with_only_one_item[0].name
+  end
 
-def test_merchants_with_only_one_item_registered_in_month_returns_array_of_merchants
-  assert_equal "NatureDots", @sa.merchants_with_only_one_item_registered_in_month("June")[0].name
-end
+  def test_merchants_with_only_one_item_registered_in_month_returns_array_of_merchants
+    assert_equal "NatureDots", @sa.merchants_with_only_one_item_registered_in_month("June")[0].name
+  end
 
-def test_revenue_by_merchant_finds_total_revenue_for_merchant
-  assert_equal 6601.58, @sa.revenue_by_merchant(12334113).round(2)
-end
+  def test_revenue_by_merchant_finds_total_revenue_for_merchant
+    assert_equal 6601.58, @sa.revenue_by_merchant(12334113).round(2)
+  end
 
   def test_group_invoice_items
     assert_equal Hash, @sa.group_invoice_items(12334112).class
@@ -155,22 +155,26 @@ end
     assert_equal 4, @sa.find_total_quantity_of_items_sold(12334112).length
   end
 
-def test_find_top_invoice_item_finds_invoice_item_with_highest_quantity
-  skip
-  assert_equal InvoiceItem, @sa.find_top_invoice_items(12334112)[0].class
-  assert_equal Array, @sa.find_top_invoice_items(12334112).class
-end
+  # def test_find_top_invoice_item_finds_invoice_item_with_highest_quantity
+  #   skip
+  #   assert_equal InvoiceItem, @sa.find_top_invoice_items(12334112)[0].class
+  #   assert_equal Array, @sa.find_top_invoice_items(12334112).class
+  # end
 
-def test_most_sold_item_for_merchant_returns_array_with_item
-  assert_equal Item, @sa.most_sold_item_for_merchant(12334113)[0].class
-  assert_equal Array, @sa.most_sold_item_for_merchant(12334113).class
-  assert_equal "Eule - Topflappen, handgehäkelt, Paar", @sa.most_sold_item_for_merchant(12334113)[0].name
-end
+  def test_most_sold_item_for_merchant_returns_array_with_item
+    assert_equal Item, @sa.most_sold_item_for_merchant(12334113)[0].class
+    assert_equal Array, @sa.most_sold_item_for_merchant(12334113).class
+    assert_equal "Eule - Topflappen, handgehäkelt, Paar", @sa.most_sold_item_for_merchant(12334113)[0].name
+  end
 
-def test_best_item_for_merchant
-  skip
-  assert_equal "", @sa.best_item_for_merchant
-  assert_equal Item, @sa.best_item_for_merchant
-end
+  def test_find_total_revenue_of_items_sold_reduces_invoice_revenue
+    assert_equal 119.96, @sa.find_total_revenue_of_items_sold(12334113).values[0].to_f.round(2)
+    assert_equal Hash, @sa.find_total_revenue_of_items_sold(12334113).class
+  end
+
+  def test_best_item_for_merchant
+    assert_equal "Eule - Topflappen, handgehäkelt, Paar", @sa.best_item_for_merchant(12334113).name
+    assert_equal Item, @sa.best_item_for_merchant(12334113).class
+  end
 
 end
