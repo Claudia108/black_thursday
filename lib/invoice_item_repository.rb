@@ -7,7 +7,6 @@ class InvoiceItemRepository
   attr_reader :sales_engine, :invoice_items
 
   def initialize(value_at_invoice_item, sales_engine)
-    @invoice_items = []
     @sales_engine = sales_engine
     make_invoice_items(value_at_invoice_item)
   end
@@ -21,13 +20,6 @@ class InvoiceItemRepository
       InvoiceItem.new(invoice_item_hash, self)
     end
   end
-
-  # def make_invoice_items(invoice_item_hashes)
-  #   invoice_item_hashes.each do |invoice_item_hash|
-  #     @invoice_items << InvoiceItem.new(invoice_item_hash, self)
-  #   end
-  #   @invoice_items
-  # end
 
   def all
     @invoice_items
