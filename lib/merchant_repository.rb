@@ -1,16 +1,11 @@
 require_relative 'sales_engine'
 require_relative 'merchant'
-require 'csv'
-require 'pry'
 
 class MerchantRepository
   attr_reader :merchants, :sales_engine
+  
   def initialize(value_at_merchant, sales_engine)
-    # takes in an array of hashes where each hash represents data
-    # for a single merchant
-    # merchants have [:id, :name, :......]
     @sales_engine = sales_engine
-    @merchants = []
     make_merchants(value_at_merchant)
   end
 
@@ -19,9 +14,8 @@ class MerchantRepository
   end
 
   def make_merchants(merchant_hashes)
-    #@merchants = value_at_merchant.map { |merchant_row| Merchant.new(merchant_row)}
-    merchant_hashes.each do |merchant_hash|
-      @merchants << Merchant.new(merchant_hash, self)
+    @merchants = merchant_hashes.map do |merchant_hash|
+      Merchant.new(merchant_hash, self)
     end
   end
 
@@ -52,17 +46,14 @@ class MerchantRepository
   end
 
   def find_all_by_name(name_fragment)
-    @merchants.find_all { |object| object.name.downcase.include?(name_fragment.downcase)}
+    @merchants.find_all { |object| object.name.downcase.
+                        include?(name_fragment.downcase)}
   end
 
   def find_paid_invoice_items(merchant_id)
     initr = @sales_engine.invoice_items
-    invoices = find_invoices(merchant_id)
-    invoices.map do |invoice|
-      if invoice.is_paid_in_full?
-      initr.find_all_by_invoice_id(invoice.id)
-      end
+    find_invoices(merchant_id).map do |invoice|
+      initr.find_all_by_invoice_id(invoice.id) if invoice.is_paid_in_full?
     end.compact.flatten
   end
-
 end

@@ -7,8 +7,8 @@ require 'bigdecimal'
 
 class InvoiceRepository
   attr_reader :sales_engine, :invoices
+
   def initialize(value_at_invoice, sales_engine)
-    @invoices = []
     @sales_engine = sales_engine
     make_invoices(value_at_invoice)
   end
@@ -18,16 +18,16 @@ class InvoiceRepository
   end
 
   def make_invoices(invoice_hashes)
-    invoice_hashes.each do |invoice_hash|
-      @invoices << Invoice.new(invoice_hash, self)
+    @invoices = invoice_hashes.map do |invoice_hash|
+      Invoice.new(invoice_hash, self)
     end
-    @invoices
   end
 
   def find_total(invoice_id)
-    invoice_items = @sales_engine.invoice_items.find_all_by_invoice_id(invoice_id)
-    total = invoice_items.reduce(0) { |sum, item| sum += item.unit_price_per_dollars * item.quantity }
-    total.to_d
+    inv_items = @sales_engine.invoice_items.find_all_by_invoice_id(invoice_id)
+    inv_items.reduce(0) do |sum, item|
+      sum += item.unit_price_per_dollars * item.quantity
+    end.to_d
   end
 
   def find_transactions(invoice_id)
@@ -39,10 +39,9 @@ class InvoiceRepository
   end
 
   def find_items(invoice_id)
-    invoice_items = @sales_engine.invoice_items.find_all_by_invoice_id(invoice_id)
-    item_ids = invoice_items.map { |item| item.item_id }
-    items = item_ids.map { |id| @sales_engine.items.find_by_id(id)}
-    items.compact
+    inv_items = @sales_engine.invoice_items.find_all_by_invoice_id(invoice_id)
+    item_ids = inv_items.map { |item| item.item_id }
+    item_ids.map { |id| @sales_engine.items.find_by_id(id)}.compact
   end
 
   def find_customer(customer_id)

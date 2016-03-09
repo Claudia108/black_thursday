@@ -28,9 +28,7 @@ class CustomerRepository
   def find_merchants(customer_id)
     invoices = @sales_engine.invoices.find_all_by_customer_id(customer_id)
     merchant_ids = invoices.map { |invoice| invoice.merchant_id }
-    merchants = merchant_ids.map do |id|
-      @sales_engine.merchants.find_by_id(id)
-    end
+    merchant_ids.map { |id|  @sales_engine.merchants.find_by_id(id) }
   end
 
   def find_by_id(id)
@@ -38,11 +36,12 @@ class CustomerRepository
   end
 
   def find_all_by_first_name(name_fragment)
-    @customers.find_all { |object| object.first_name.downcase.include?(name_fragment.downcase)}
+    @customers.find_all { |object| object.first_name.downcase.
+                        include?(name_fragment.downcase) }
   end
 
   def find_all_by_last_name(name_fragment)
-    @customers.find_all { |object| object.last_name.downcase.include?(name_fragment.downcase)}
+    @customers.find_all { |object| object.last_name.downcase.
+                        include?(name_fragment.downcase) }
   end
-
 end

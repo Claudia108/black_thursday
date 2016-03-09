@@ -1,13 +1,10 @@
-require 'pry'
 require_relative "transaction"
 require_relative "sales_engine"
-require 'csv'
 
 class TransactionRepository
   attr_reader :sales_engine, :transactions
 
   def initialize(transactions_data, sales_engine)
-    @transactions = []
     @sales_engine = sales_engine
     make_transactions(transactions_data)
   end
@@ -17,10 +14,9 @@ class TransactionRepository
   end
 
   def make_transactions(transaction_hashes)
-    transaction_hashes.each do |transaction_hash|
-      @transactions << Transaction.new(transaction_hash, self)
+    @transactions = transaction_hashes.map do |transaction_hash|
+      Transaction.new(transaction_hash, self)
     end
-    @transactions
   end
 
   def find_invoice(invoice_id)

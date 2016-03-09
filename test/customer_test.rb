@@ -7,15 +7,19 @@ require_relative '../lib/sales_engine'
 class CustomerTest < Minitest::Test
   def setup
     se = SalesEngine.from_csv({
-            :merchants     => './fixtures/merchants_fixtures.csv',
-            :items         => './fixtures/items_fixtures.csv',
-            :invoices      => './fixtures/invoices_fixtures.csv',
-            :invoice_items => './fixtures/invoice_items_fixtures.csv',
-            :transactions  => './fixtures/transactions_fixtures.csv',
-            :customers => './fixtures/customers_fixtures.csv'
+            :merchants     => './test/fixtures/merchants_fixtures.csv',
+            :items         => './test/fixtures/items_fixtures.csv',
+            :invoices      => './test/fixtures/invoices_fixtures.csv',
+            :invoice_items => './test/fixtures/invoice_items_fixtures.csv',
+            :transactions  => './test/fixtures/transactions_fixtures.csv',
+            :customers     => './test/fixtures/customers_fixtures.csv'
             })
     cr = se.customers
     @c = cr.find_by_id(1)
+  end
+
+  def test_repository_returns_customers_repository
+    assert_equal CustomerRepository, @c.repository.class
   end
 
   def test_id_returns_the_id_as_integer
@@ -43,5 +47,4 @@ class CustomerTest < Minitest::Test
     assert_equal "NatureDots", @c.merchants[0].name
     assert_equal "MiniatureBikez", @c.merchants[3].name
   end
-
 end

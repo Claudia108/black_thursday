@@ -1,4 +1,4 @@
- require 'minitest/autorun'
+require 'minitest/autorun'
 require 'minitest/pride'
 require_relative '../lib/invoice'
 require_relative '../lib/sales_engine'
@@ -7,30 +7,28 @@ class InvoiceTest < Minitest::Test
 
   def setup
     se = SalesEngine.from_csv({
-            :merchants     => './fixtures/merchants_fixtures.csv',
-            :items         => './fixtures/items_fixtures.csv',
-            :invoices      => './fixtures/invoices_fixtures.csv',
-            :invoice_items => './fixtures/invoice_items_fixtures.csv',
-            :transactions  => './fixtures/transactions_fixtures.csv',
-            :customers => './fixtures/customers_fixtures.csv'
+            :merchants     => './test/fixtures/merchants_fixtures.csv',
+            :items         => './test/fixtures/items_fixtures.csv',
+            :invoices      => './test/fixtures/invoices_fixtures.csv',
+            :invoice_items => './test/fixtures/invoice_items_fixtures.csv',
+            :transactions  => './test/fixtures/transactions_fixtures.csv',
+            :customers     => './test/fixtures/customers_fixtures.csv'
             })
     ir = se.invoices
     @invoice = ir.find_by_id(1)
     @invoice2 = ir.find_by_id(6)
+  end
 
-    # @invoice = Invoice.new({
-    #   id: 1,
-    #   costumer_id: 1,
-    #   merchant_id: 14784142,
-    #   status: :pending,
-    #   created_at: '2009-02-07',
-    #   updated_at: '2014-03-15'
-    #   },
-    #   invoice_repository = nil)
+  def test_repository_points_to_invoice_repo
+    assert_equal InvoiceRepository, @invoice.repository.class
   end
 
   def test_initalize_organizes_row_value_id
     assert_equal 1, @invoice.id
+  end
+
+  def test_initalize_organizes_row_value_customer_id
+    assert_equal 1, @invoice.customer_id
   end
 
   def test_initalize_organizes_row_value_merchant_id
@@ -80,5 +78,4 @@ class InvoiceTest < Minitest::Test
     assert_equal 7604.23, @invoice.total.to_f
     assert_equal BigDecimal, @invoice.total.class
   end
-
 end

@@ -7,19 +7,19 @@ require_relative '../lib/sales_engine'
 class SalesAnalystTest < Minitest::Test
   def setup
     se = SalesEngine.from_csv({
-            :merchants     => './fixtures/merchants_fixtures.csv',
-            :items         => './fixtures/items_fixtures.csv',
-            :invoices      => './fixtures/invoices_fixtures.csv',
-            :invoice_items => './fixtures/invoice_items_fixtures.csv',
-            :transactions  => './fixtures/transactions_fixtures.csv',
-            :customers => './fixtures/customers_fixtures.csv'
+            :merchants     => './test/fixtures/merchants_fixtures.csv',
+            :items         => './test/fixtures/items_fixtures.csv',
+            :invoices      => './test/fixtures/invoices_fixtures.csv',
+            :invoice_items => './test/fixtures/invoice_items_fixtures.csv',
+            :transactions  => './test/fixtures/transactions_fixtures.csv',
+            :customers     => './test/fixtures/customers_fixtures.csv'
             })
     @mr = se.merchants
     @sa = SalesAnalyst.new(se)
   end
-
+  
   def test_average_items_per_merchant_returns_float
-    assert_equal  1.75, @sa.average_items_per_merchant
+    assert_equal 1.75, @sa.average_items_per_merchant
   end
 
   def test_average_items_per_merchant_standard_deviation
@@ -41,14 +41,19 @@ class SalesAnalystTest < Minitest::Test
     assert_equal BigDecimal, @sa.average_average_price_per_merchant.class
   end
 
-  def test_price_deviation_returns_price_deviation_for_all_items
-    @sa.find_all_item_prices
-    assert_equal 52.17, @sa.price_deviation
-  end
-
   def test_golden_items_returns_items_that_are_two_standard_deviations_above_average
     assert_equal "Cache cache à la plage", @sa.golden_items[0].name
     assert_equal nil, @sa.golden_items[1]
+  end
+
+  def test_find_all_item_prices_returns_array_of_all_item_prices
+    assert_equal 12.00, @sa.find_all_item_prices[0].to_f
+    assert_equal 7, @sa.find_all_item_prices.count
+  end
+
+  def test_price_deviation_returns_price_deviation_for_all_items
+    @sa.find_all_item_prices
+    assert_equal 52.17, @sa.price_deviation
   end
 
   def test_average_invoices_per_merchant_returns_average
@@ -78,7 +83,7 @@ class SalesAnalystTest < Minitest::Test
     assert_equal 0, @sa.bottom_merchants_by_invoice_count.count
   end
 
-  def test_weekdays_builds_hash_with_counts
+  def test_weekday_count_builds_hash_with_counts
     assert_equal 7, @sa.weekday_count.count
     assert_equal 1, @sa.weekday_count["Sunday"]
     assert_equal 3, @sa.weekday_count["Monday"]
@@ -89,13 +94,14 @@ class SalesAnalystTest < Minitest::Test
     assert_equal 2, @sa.weekday_count["Saturday"]
   end
 
-  def test_weekday_deviation_returns_deviation_of_invoices_per_day
-    assert_equal 1.21, @sa.weekday_deviation.round(2)
+  def test_top_days_by_invoice_count_returns_array_of_weekdays
+    assert_equal "Friday", @sa.top_days_by_invoice_count[0]
+    assert_equal "Monday", @sa.top_days_by_invoice_count[1]
+    assert_equal 2, @sa.top_days_by_invoice_count.count
   end
 
-  def test_top_days_by_invoice_count_returns_array_of_weekdays
-    assert_equal nil, @sa.top_days_by_invoice_count[0]
-    assert_equal 0, @sa.top_days_by_invoice_count.count
+  def test_weekday_deviation_returns_deviation_of_invoices_per_day
+    assert_equal 1.21, @sa.weekday_deviation.round(2)
   end
 
   def test_invoice_status_returns_percentage_of_shipped_returned_and_pending
@@ -112,16 +118,20 @@ class SalesAnalystTest < Minitest::Test
   def test_top_revenue_earners_returns_top_20_merchants_by_default
     assert_equal "Candisart", @sa.top_revenue_earners[0].name
     assert_equal 4, @sa.top_revenue_earners.count
-    #only 4 merchants in fixture
   end
 
-  def test_top_revenue_earners_returned_sorted_array_of_merchats
+  def test_top_revenue_earners_returned_sorted_array_of_merchants
     assert_equal 4, @sa.top_revenue_earners.count
+    assert_equal Merchant, @sa.top_revenue_earners[0].class
   end
 
   def test_top_revenue_earners_returns_number_of_merchants_specified
     assert_equal "Candisart", @sa.top_revenue_earners(3)[0].name
     assert_equal 3, @sa.top_revenue_earners(3).count
+  end
+
+  def test_merchants_ranked_by_reveue_returns_all_merchants_ranked
+    assert_equal 4, @sa.merchants_ranked_by_revenue.count
   end
 
   def test_merchants_with_revenue_returns_array_of_sorted_merchants
@@ -148,6 +158,7 @@ class SalesAnalystTest < Minitest::Test
 
   def test_group_invoice_items
     assert_equal Hash, @sa.group_invoice_items(12334112).class
+    assert_equal InvoiceItem, @sa.group_invoice_items(12334112).values[0][0].class
   end
 
   def test_find_total_quantity_reduces_invoice_quantity
@@ -155,21 +166,10 @@ class SalesAnalystTest < Minitest::Test
     assert_equal 4, @sa.find_total_quantity_of_items_sold(12334112).length
   end
 
-  # def test_find_top_invoice_item_finds_invoice_item_with_highest_quantity
-  #   skip
-  #   assert_equal InvoiceItem, @sa.find_top_invoice_items(12334112)[0].class
-  #   assert_equal Array, @sa.find_top_invoice_items(12334112).class
-  # end
-
   def test_most_sold_item_for_merchant_returns_array_with_item
     assert_equal Item, @sa.most_sold_item_for_merchant(12334113)[0].class
     assert_equal Array, @sa.most_sold_item_for_merchant(12334113).class
     assert_equal "Eule - Topflappen, handgehäkelt, Paar", @sa.most_sold_item_for_merchant(12334113)[0].name
-  end
-
-  def test_find_total_revenue_of_items_sold_reduces_invoice_revenue
-    assert_equal 119.96, @sa.find_total_revenue_of_items_sold(12334113).values[0].to_f.round(2)
-    assert_equal Hash, @sa.find_total_revenue_of_items_sold(12334113).class
   end
 
   def test_best_item_for_merchant
@@ -177,4 +177,8 @@ class SalesAnalystTest < Minitest::Test
     assert_equal Item, @sa.best_item_for_merchant(12334113).class
   end
 
+  def test_find_total_revenue_of_items_sold_reduces_invoice_revenue
+    assert_equal 119.96, @sa.find_total_revenue_of_items_sold(12334113).values[0].to_f.round(2)
+    assert_equal Hash, @sa.find_total_revenue_of_items_sold(12334113).class
+  end
 end

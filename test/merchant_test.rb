@@ -1,26 +1,23 @@
 require 'minitest/autorun'
 require 'minitest/pride'
 require_relative '../lib/merchant'
-require_relative '../lib/merchant_repository'
-require_relative '../lib/item'
-require_relative '../lib/item_repository'
 require_relative '../lib/sales_engine'
 
 class MerchantTest < Minitest::Test
   def setup
     se = SalesEngine.from_csv({
-            :merchants => './fixtures/merchants_fixtures.csv',
-            :items     => './fixtures/items_fixtures.csv',
-            :invoices      => './fixtures/invoices_fixtures.csv',
-            :invoice_items => './fixtures/invoice_items_fixtures.csv',
-            :transactions  => './fixtures/transactions_fixtures.csv',
-            :customers => './fixtures/customers_fixtures.csv'
+            :merchants     => './test/fixtures/merchants_fixtures.csv',
+            :items         => './test/fixtures/items_fixtures.csv',
+            :invoices      => './test/fixtures/invoices_fixtures.csv',
+            :invoice_items => './test/fixtures/invoice_items_fixtures.csv',
+            :transactions  => './test/fixtures/transactions_fixtures.csv',
+            :customers     => './test/fixtures/customers_fixtures.csv'
             })
     @m = se.merchants.find_by_id(12334105)
   end
 
-  def test_it_creates_a_merchant_object
-    assert_equal Merchant, @m.class
+  def test_merchant_has_access_to_repository
+    assert_equal MerchantRepository, @m.repository.class
   end
 
   def test_id_returns_id_of_merchant
@@ -29,6 +26,10 @@ class MerchantTest < Minitest::Test
 
   def test_name_returns_name_of_merchant
     assert_equal "Shopin1901", @m.name
+  end
+
+  def test_created_at_returns_date_created
+    assert_equal Time.parse("2010-12-10 00:00:00 -0700"), @m.created_at
   end
 
   def test_items_returns_merchants_items
@@ -52,13 +53,13 @@ class MerchantTest < Minitest::Test
     assert_equal 3, @m.customers.count
   end
 
-  def test_revenue_sums_revenue_of_merchants
-    assert_equal 9409.36, @m.revenue
-  end
-
-  def test_find_invoice_items_returns_array_of_all_invoice_items_for_merchant
+  def test_invoice_items_returns_array_of_all_invoice_items_for_merchant
     assert_equal InvoiceItem, @m.invoice_items[0].class
     assert_equal 5, @m.invoice_items[0].id
   end
 
+  def test_revenue_sums_revenue_of_merchants
+    assert_equal 9409.36, @m.revenue.to_f
+    assert_equal BigDecimal, @m.revenue.class
+  end
 end

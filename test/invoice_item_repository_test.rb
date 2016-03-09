@@ -2,19 +2,18 @@ require 'minitest/autorun'
 require 'minitest/pride'
 require 'csv'
 require 'time'
-require 'pry'
 require_relative '../lib/invoice_item_repository'
 require_relative '../lib/sales_engine'
 
 class InvoiceItemRepositoryTest < Minitest::Test
   def setup
     se = SalesEngine.from_csv({
-            :merchants     => './fixtures/merchants_fixtures.csv',
-            :items         => './fixtures/items_fixtures.csv',
-            :invoices      => './fixtures/invoices_fixtures.csv',
-            :invoice_items => './fixtures/invoice_items_fixtures.csv',
-            :transactions  => './fixtures/transactions_fixtures.csv',
-            :customers => './fixtures/customers_fixtures.csv'
+            :merchants     => './test/fixtures/merchants_fixtures.csv',
+            :items         => './test/fixtures/items_fixtures.csv',
+            :invoices      => './test/fixtures/invoices_fixtures.csv',
+            :invoice_items => './test/fixtures/invoice_items_fixtures.csv',
+            :transactions  => './test/fixtures/transactions_fixtures.csv',
+            :customers     => './test/fixtures/customers_fixtures.csv'
             })
     @ir = se.invoice_items
   end
@@ -23,6 +22,7 @@ class InvoiceItemRepositoryTest < Minitest::Test
     all = @ir.all
     assert_equal 1, all[0].id
     assert_equal 2, all[1].id
+    assert_equal 25, all[24].id
     assert_equal 25, all.count
   end
 

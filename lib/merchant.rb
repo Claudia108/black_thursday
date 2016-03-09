@@ -3,8 +3,8 @@ class Merchant
 
   def initialize(merchant_hash, repository)
     @repository = repository
-    @id = merchant_hash[:id].to_i
-    @name = merchant_hash[:name]
+    @id         = merchant_hash[:id].to_i
+    @name       = merchant_hash[:name]
     @created_at = Time.parse(merchant_hash[:created_at])
   end
 
@@ -24,10 +24,9 @@ class Merchant
     @repository.find_paid_invoice_items(@id)
   end
 
-
   def revenue
-    revenue = invoice_items.reduce(0) { |sum, invoice_item| sum += invoice_item.quantity * invoice_item.unit_price}
-    revenue
+    invoice_items.reduce(0) do |sum, invoice_item|
+      sum += invoice_item.quantity * invoice_item.unit_price
+    end
   end
-
 end
