@@ -2,7 +2,6 @@ require 'minitest/autorun'
 require 'minitest/pride'
 require 'csv'
 require 'time'
-require 'pry'
 require_relative '../lib/invoice_item_repository'
 require_relative '../lib/sales_engine'
 
@@ -23,6 +22,7 @@ class InvoiceItemRepositoryTest < Minitest::Test
     all = @ir.all
     assert_equal 1, all[0].id
     assert_equal 2, all[1].id
+    assert_equal 25, all[24].id
     assert_equal 25, all.count
   end
 

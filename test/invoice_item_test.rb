@@ -1,10 +1,6 @@
 require 'minitest/autorun'
 require 'minitest/pride'
-require 'csv'
-require 'time'
 require 'bigdecimal'
-require 'pry'
-require 'date'
 require_relative '../lib/invoice_item'
 require_relative '../lib/sales_engine'
 

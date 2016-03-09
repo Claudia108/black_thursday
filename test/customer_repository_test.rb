@@ -14,10 +14,22 @@ class CustomerRepositoryTest < Minitest::Test
             :customers     => './test/fixtures/customers_fixtures.csv'
             })
     @cr = se.customers
-# 1,Joey,Ondricka,2012-03-27 14:54:09 UTC,2012-03-27 14:54:09 UTC
   end
 
-  def test_find_by_id_returns_custy_with_id
+  def test_all_returns_array_of_all_customers
+    assert_equal 3, @cr.all.count
+  end
+  
+  def test_find_merchants_returns_customers_merchants
+    assert_equal "NatureDots", @cr.find_merchants(1)[0].name
+    assert_equal "Shopin1901", @cr.find_merchants(1)[1].name
+    assert_equal "Candisart", @cr.find_merchants(1)[2].name
+    assert_equal "MiniatureBikez", @cr.find_merchants(1)[3].name
+    assert_equal nil, @cr.find_merchants(1)[4]
+    assert_equal 4, @cr.find_merchants(1).count
+  end
+
+  def test_find_by_id_returns_customer_with_id
     assert_equal "Joey", @cr.find_by_id(1).first_name
   end
 
@@ -41,13 +53,5 @@ class CustomerRepositoryTest < Minitest::Test
     assert_equal [], @cr.find_all_by_last_name("hde")
   end
 
-  def test_find_merchants_returns_customers_merchants
-    assert_equal "NatureDots", @cr.find_merchants(1)[0].name
-    assert_equal "Shopin1901", @cr.find_merchants(1)[1].name
-    assert_equal "Candisart", @cr.find_merchants(1)[2].name
-    assert_equal "MiniatureBikez", @cr.find_merchants(1)[3].name
-    assert_equal nil, @cr.find_merchants(1)[4]
-    assert_equal 4, @cr.find_merchants(1).count
-  end
 
 end

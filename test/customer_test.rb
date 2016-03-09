@@ -18,6 +18,10 @@ class CustomerTest < Minitest::Test
     @c = cr.find_by_id(1)
   end
 
+  def test_repository_returns_customers_repository
+    assert_equal CustomerRepository, @c.repository.class
+  end
+
   def test_id_returns_the_id_as_integer
     assert_equal 1, @c.id
   end
@@ -43,5 +47,4 @@ class CustomerTest < Minitest::Test
     assert_equal "NatureDots", @c.merchants[0].name
     assert_equal "MiniatureBikez", @c.merchants[3].name
   end
-
 end

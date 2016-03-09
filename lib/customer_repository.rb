@@ -44,5 +44,4 @@ class CustomerRepository
     @customers.find_all { |object| object.last_name.downcase.
                         include?(name_fragment.downcase) }
   end
-
 end

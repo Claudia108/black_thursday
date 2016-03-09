@@ -1,0 +1,12 @@
+language: ruby
+rvm:
+  - 2.3.0
+notifications:
+  email:
+    recipients:
+      -patrickwhardy@gmail.com
+    on_success: always
+    on_failure: always
+branches:
+  except:
+  - master
