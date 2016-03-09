@@ -11,13 +11,13 @@ class Invoice
     @created_at   = Time.parse(invoice_hash[:created_at])
     @updated_at   = Time.parse(invoice_hash[:updated_at])
   end
+  
+  def merchant
+    @repository.find_merchant(@merchant_id)
+  end
 
   def items
     @repository.find_items(@id)
-  end
-
-  def merchant
-    @repository.find_merchant(@merchant_id)
   end
 
   def transactions

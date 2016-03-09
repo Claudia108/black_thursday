@@ -1,10 +1,9 @@
 require_relative 'sales_engine'
 require_relative 'merchant'
-require 'csv'
-require 'pry'
 
 class MerchantRepository
   attr_reader :merchants, :sales_engine
+  
   def initialize(value_at_merchant, sales_engine)
     @sales_engine = sales_engine
     make_merchants(value_at_merchant)

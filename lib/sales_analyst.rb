@@ -10,15 +10,15 @@ class SalesAnalyst
     @merchant_ids = @mr.all.map { |merchant| merchant.id }
   end
 
-  def average_items_per_merchant
-    (@ir.all.count.to_f / @mr.all.count.to_f).round(2)
-  end
-
   def compute_deviation(repository, elements, average)
     sum = elements.reduce(0) do |sum, element|
       sum + ((element - average) ** 2)
     end
     deviation = Math.sqrt(sum / (repository.all.count - 1)).round(2)
+  end
+
+  def average_items_per_merchant
+    (@ir.all.count.to_f / @mr.all.count.to_f).round(2)
   end
 
   def average_items_per_merchant_standard_deviation
@@ -35,14 +35,10 @@ class SalesAnalyst
   def merchants_with_high_item_count
     threshold = average_items_per_merchant +
                 average_items_per_merchant_standard_deviation
-    golden_merchants = []
-    @merchant_ids.each do |id|
+    @merchant_ids.map do |id|
       item_count = @mr.find_items(id).count
-      if item_count > threshold
-        golden_merchants << @mr.find_by_id(id)
-      end
-    end
-    golden_merchants
+      @mr.find_by_id(id) if item_count > threshold
+    end.compact
   end
 
   def average_item_price_for_merchant(id)
@@ -72,7 +68,8 @@ class SalesAnalyst
   end
 
   def price_deviation
-    compute_deviation(@ir, find_all_item_prices, average_average_price_per_merchant)
+    compute_deviation(@ir, find_all_item_prices,
+                      average_average_price_per_merchant)
   end
 
   def average_invoices_per_merchant
@@ -84,10 +81,9 @@ class SalesAnalyst
   end
 
   def average_invoices_per_merchant_standard_deviation
-    compute_deviation(@mr, all_invoices_per_merchant, average_invoices_per_merchant)
+    compute_deviation(@mr, all_invoices_per_merchant,
+                      average_invoices_per_merchant)
   end
-#top and bottom merchant are same methods almost.
-#can we pass in > as an arg?
 
   def top_merchants_by_invoice_count
     threshold = average_invoices_per_merchant +
@@ -106,11 +102,10 @@ class SalesAnalyst
       @mr.find_by_id(merchant_id) if invoice_count < threshold
     end.compact
   end
-  ###################################################################
 
   def weekday_count
-    weekdays = @invr.all.map { |invoice| invoice.created_at.to_date.strftime('%A') }
-    weekday_count = weekdays.reduce(Hash.new(0)) do |hash, weekday|
+    wd = @invr.all.map { |invoice| invoice.created_at.to_date.strftime('%A') }
+    weekday_count = wd.reduce(Hash.new(0)) do |hash, weekday|
       hash[weekday] += 1
       hash
     end

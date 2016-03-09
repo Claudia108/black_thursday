@@ -6,7 +6,6 @@ require_relative 'invoice_item_repository'
 require_relative 'transaction_repository'
 require_relative 'sales_analyst'
 require 'csv'
-require 'pry'
 
 class SalesEngine
   attr_reader :data, :merchants, :items, :invoices, :customers,
@@ -25,7 +24,8 @@ class SalesEngine
 
   def self.from_csv(data)
     csv_content = data.reduce(Hash.new(0)) do |memo, data|
-      memo[data[0]] = CSV.read(data[1], headers: true, header_converters: :symbol)
+      memo[data[0]] = CSV.read(data[1],
+                    headers: true, header_converters: :symbol)
       memo
     end
     SalesEngine.new(csv_content)

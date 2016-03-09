@@ -1,8 +1,6 @@
 require 'minitest/autorun'
 require 'minitest/pride'
 require 'csv'
-require 'time'
-require 'pry'
 require_relative '../lib/transaction'
 require_relative '../lib/sales_engine'
 
@@ -15,10 +13,14 @@ class TransactionTest < Minitest::Test
               :invoices      => './test/fixtures/invoices_fixtures.csv',
               :invoice_items => './test/fixtures/invoice_items_fixtures.csv',
               :transactions  => './test/fixtures/transactions_fixtures.csv',
-              :customers => './test/fixtures/customers_fixtures.csv'
+              :customers     => './test/fixtures/customers_fixtures.csv'
               })
       tr = se.transactions
       @transaction = tr.find_by_id(1)
+  end
+
+  def test_transaction_has_access_to_repository
+    assert_equal TranscationRepository, @transaction.repository.class
   end
 
   def test_initalize_organizes_row_value_id

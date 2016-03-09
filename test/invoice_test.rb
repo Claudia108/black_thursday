@@ -1,4 +1,4 @@
- require 'minitest/autorun'
+require 'minitest/autorun'
 require 'minitest/pride'
 require_relative '../lib/invoice'
 require_relative '../lib/sales_engine'
@@ -19,8 +19,16 @@ class InvoiceTest < Minitest::Test
     @invoice2 = ir.find_by_id(6)
   end
 
+  def test_repository_points_to_invoice_repo
+    assert_equal InvoiceRepository, @invoice.repository.class
+  end
+
   def test_initalize_organizes_row_value_id
     assert_equal 1, @invoice.id
+  end
+
+  def test_initalize_organizes_row_value_customer_id
+    assert_equal 1, @invoice.customer_id
   end
 
   def test_initalize_organizes_row_value_merchant_id

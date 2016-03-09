@@ -1,9 +1,8 @@
 require_relative 'sales_engine'
 require_relative 'item'
+require 'time'
 require 'csv'
 require 'bigdecimal'
-require 'time'
-require 'pry'
 
 class ItemRepository
   attr_reader :items, :sales_engine

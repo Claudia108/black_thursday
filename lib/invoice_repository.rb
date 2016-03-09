@@ -7,7 +7,7 @@ require 'bigdecimal'
 
 class InvoiceRepository
   attr_reader :sales_engine, :invoices
-  
+
   def initialize(value_at_invoice, sales_engine)
     @sales_engine = sales_engine
     make_invoices(value_at_invoice)
