@@ -22,6 +22,13 @@ class SalesAnalyst
     # (total_items/@mr.merchants.count.to_f).round(2)
   end
 
+  def compute_deviation(repository, elements, average)
+    sum = elements.reduce(0) do |sum, element|
+      sum + ((element - average) ** 2)
+    end
+    deviation = Math.sqrt(sum / (repository.all.count - 1)).round(2)
+  end
+
   def average_items_per_merchant_standard_deviation
     merchant_ids = @mr.all.map { |merchant| merchant.id }
     item_count = merchant_ids.map do |id|
@@ -31,10 +38,11 @@ class SalesAnalyst
   end
 
   def item_count_deviation(item_count)
-    sum = item_count.reduce(0) do |sum, count|
-      sum + ((count - average_items_per_merchant) ** 2)
-    end
-    deviation = Math.sqrt(sum / (@mr.all.count - 1)).round(2)
+    # sum = item_count.reduce(0) do |sum, count|
+    #   sum + ((count - average_items_per_merchant) ** 2)
+    # end
+    # deviation = Math.sqrt(sum / (@mr.all.count - 1)).round(2)
+    compute_deviation(@mr, item_count, average_items_per_merchant)
   end
 
   def merchants_with_high_item_count
@@ -86,10 +94,11 @@ class SalesAnalyst
   end
 
   def price_deviation
-    sum = find_all_item_prices.reduce(0) do |sum, price|
-      sum + ((price - average_average_price_per_merchant) ** 2)
-    end
-    deviation = Math.sqrt(sum / (@ir.all.count - 1)).round(2)
+    # sum = find_all_item_prices.reduce(0) do |sum, price|
+    #   sum + ((price - average_average_price_per_merchant) ** 2)
+    # end
+    # deviation = Math.sqrt(sum / (@ir.all.count - 1)).round(2)
+    compute_deviation(@ir, find_all_item_prices, average_average_price_per_merchant)
   end
 
   def average_invoices_per_merchant
@@ -109,10 +118,11 @@ class SalesAnalyst
   end
 
   def average_invoices_per_merchant_standard_deviation
-    sum = all_invoices_per_merchant.reduce(0) do |sum, count|
-      sum + ((count - average_invoices_per_merchant) ** 2)
-    end
-    deviation = Math.sqrt(sum / (@mr.all.count - 1).to_f).round(2)
+    # sum = all_invoices_per_merchant.reduce(0) do |sum, count|
+    #   sum + ((count - average_invoices_per_merchant) ** 2)
+    # end
+    # deviation = Math.sqrt(sum / (@mr.all.count - 1).to_f).round(2)
+    compute_deviation(@mr, all_invoices_per_merchant, average_invoices_per_merchant)
   end
 
   def top_merchants_by_invoice_count
@@ -149,9 +159,9 @@ class SalesAnalyst
     end
   end
 
-    def  top_days_by_invoice_count
+    def top_days_by_invoice_count
       weekday_count
-      threshold = (@invr.all.count/7) + weekday_deviation*7 #+ 20
+      threshold = (@invr.all.count / 7 ) + weekday_deviation
       top_days = []
       weekday_count.each do |key, value|
         if value > threshold
@@ -159,7 +169,6 @@ class SalesAnalyst
         end
       end
       top_days
-      # binding.pry
     end
 
     def weekday_deviation
@@ -241,12 +250,6 @@ class SalesAnalyst
       item_quantity
     end
 
-    def most_sold_item_for_merchant(merchant_id)
-      items = find_total_quantity_of_items_sold(merchant_id)
-      top = items.max_by { |item, quantity| quantity }
-      top_items = items.find_all { |item, quantity| quantity == top[1] }
-      top_items.map { |array| @ir.find_by_id(array[0]) }
-    end
 
     # def most_sold_item_for_merchant(merchant_id)
     #   invoice_items = find_top_invoice_items(merchant_id)
@@ -255,8 +258,33 @@ class SalesAnalyst
     #   top_items = items.flatten
     # end
 
-    def best_item_for_merchant
+    def most_sold_item_for_merchant(merchant_id)
+      items = find_total_quantity_of_items_sold(merchant_id)
+      sort_items(items)
+    end
 
+    def sort_items(items)
+      top = items.max_by { |item, value| value }
+      top_items = items.find_all { |item, value| value == top[1] }
+      top_items.map { |array| @ir.find_by_id(array[0]) }
+    end
+
+    def best_item_for_merchant(merchant_id)
+      items = find_total_revenue_of_items_sold(merchant_id)
+      sort_items(items).pop
+      # top = items.max_by { |item, quantity| quantity }
+      # top_items = items.find_all { |item, quantity| quantity == top[1] }
+      # top_items.map { |array| @ir.find_by_id(array[0]) }
+    end
+
+    def find_total_revenue_of_items_sold(merchant_id)
+      item_revenue = {}
+      items = group_invoice_items(merchant_id).each do |item_id, invoice_items|
+        item_revenue[item_id] = invoice_items.reduce(0) do |sum, invoice_item|
+        sum += (invoice_item.quantity * invoice_item.unit_price)
+        end
+      end
+      item_revenue
     end
 
 end
