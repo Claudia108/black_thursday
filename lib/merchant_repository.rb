@@ -55,4 +55,14 @@ class MerchantRepository
     @merchants.find_all { |object| object.name.downcase.include?(name_fragment.downcase)}
   end
 
+  def find_paid_invoice_items(merchant_id)
+    initr = @sales_engine.invoice_items
+    invoices = find_invoices(merchant_id)
+    invoices.map do |invoice|
+      if invoice.is_paid_in_full?
+      initr.find_all_by_invoice_id(invoice.id)
+      end
+    end.compact.flatten
+  end
+
 end

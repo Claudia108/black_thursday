@@ -151,7 +151,7 @@ class SalesAnalyst
 
     def  top_days_by_invoice_count
       weekday_count
-      threshold = (@invr.all.count / 7.00) + weekday_deviation
+      threshold = (@invr.all.count/7) + weekday_deviation*7 #+ 20
       top_days = []
       weekday_count.each do |key, value|
         if value > threshold
@@ -159,18 +159,104 @@ class SalesAnalyst
         end
       end
       top_days
+      # binding.pry
     end
 
     def weekday_deviation
       sum = weekday_count.reduce(0) do |sum, day|
         sum += ((day[1] - (@invr.all.count / 7.00)) ** 2)
       end
-      Math.sqrt(sum / (@invr.all.count - 1).to_f)
+      Math.sqrt(sum / 6)
     end
 
     def invoice_status(status)
       count = @invr.all.count { |invoice| invoice.status == status }
       ((count.to_f / @invr.all.count.to_f) * 100).round(2)
+    end
+
+    def total_revenue_by_date(date)
+      invoices = @invr.all.select do |invoice|
+        invoice.created_at == date
+      end
+      invoices.reduce(0) { |sum, invoice| sum += invoice.total }
+    end
+
+    def top_revenue_earners(count=20)
+      sorted = merchants_with_revenue.max_by(count) {|merchant, revenue| revenue }
+      sorted.map(&:first)
+    end
+
+    def merchants_ranked_by_revenue
+      top_revenue_earners(9999)
+    end
+
+    def merchants_with_revenue
+      merchants = @mr.all.reduce(Hash.new(0)) do |memo, merchant|
+        memo[merchant] = merchant.revenue
+        memo
+      end
+      merchants
+    end
+
+    def merchants_with_pending_invoices
+      @mr.all.select do |merchant|
+        merchant.invoices.any? { |invoice| invoice.is_paid_in_full? == false }
+      end
+    end
+
+    def merchants_with_only_one_item
+      @mr.all.select do |merchant|
+        merchant.items.count == 1
+      end
+    end
+
+    def merchants_with_only_one_item_registered_in_month(month)
+      merchants_from_month = @mr.all.find_all { |merchant| merchant.created_at.strftime("%B") == month}
+      merchants_from_month.select { |merchant| merchant.items.count == 1 }
+    end
+
+    def revenue_by_merchant(merchant_id)
+      merchant = @mr.find_by_id(merchant_id)
+      merchant.revenue
+    end
+
+    # def find_top_invoice_items(merchant_id)
+    #   merchant = @mr.find_by_id(merchant_id)
+    #   best_invoice_item = merchant.invoice_items.max_by { |invoice_item| invoice_item.quantity }
+    #   top_invoice_items = merchant.invoice_items.find_all {|invoice_item| invoice_item.quantity == best_invoice_item.quantity}
+    # end
+
+    def group_invoice_items(merchant_id)
+      invoice_items = @mr.find_by_id(merchant_id).invoice_items
+      invoice_items.group_by { |invoice_item| invoice_item.item_id }
+    end
+
+    def find_total_quantity_of_items_sold(merchant_id)
+      item_quantity = {}
+      items = group_invoice_items(merchant_id).each do |item_id, invoice_items|
+        item_quantity[item_id] = invoice_items.reduce(0) do |sum, invoice_item|
+        sum += invoice_item.quantity
+        end
+      end
+      item_quantity
+    end
+
+    def most_sold_item_for_merchant(merchant_id)
+      items = find_total_quantity_of_items_sold(merchant_id)
+      top = items.max_by { |item, quantity| quantity }
+      top_items = items.find_all { |item, quantity| quantity == top[1] }
+      top_items.map { |array| @ir.find_by_id(array[0]) }
+    end
+
+    # def most_sold_item_for_merchant(merchant_id)
+    #   invoice_items = find_top_invoice_items(merchant_id)
+    #   binding.pry
+    #   items = invoice_items.map { |invoice_item| @invr.find_items(invoice_item.invoice_id)}
+    #   top_items = items.flatten
+    # end
+
+    def best_item_for_merchant
+
     end
 
 end

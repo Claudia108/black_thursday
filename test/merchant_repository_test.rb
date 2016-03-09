@@ -87,4 +87,9 @@ class MerchantRepositoryTest < Minitest::Test
     assert_equal 3, @mr.find_customers(12334105).count
   end
 
+  def test_find_invoice_items_returns_array_of_all_invoice_items_for_merchant
+    assert_equal InvoiceItem, @mr.find_paid_invoice_items(12334112)[0].class
+    assert_equal 2, @mr.find_paid_invoice_items(12334112)[0].id
+  end
+
 end

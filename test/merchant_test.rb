@@ -52,4 +52,13 @@ class MerchantTest < Minitest::Test
     assert_equal 3, @m.customers.count
   end
 
+  def test_revenue_sums_revenue_of_merchants
+    assert_equal 9409.36, @m.revenue
+  end
+
+  def test_find_invoice_items_returns_array_of_all_invoice_items_for_merchant
+    assert_equal InvoiceItem, @m.invoice_items[0].class
+    assert_equal 5, @m.invoice_items[0].id
+  end
+
 end
