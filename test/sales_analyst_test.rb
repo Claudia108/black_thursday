@@ -7,12 +7,12 @@ require_relative '../lib/sales_engine'
 class SalesAnalystTest < Minitest::Test
   def setup
     se = SalesEngine.from_csv({
-            :merchants     => './fixtures/merchants_fixtures.csv',
-            :items         => './fixtures/items_fixtures.csv',
-            :invoices      => './fixtures/invoices_fixtures.csv',
-            :invoice_items => './fixtures/invoice_items_fixtures.csv',
-            :transactions  => './fixtures/transactions_fixtures.csv',
-            :customers => './fixtures/customers_fixtures.csv'
+            :merchants     => './test/fixtures/merchants_fixtures.csv',
+            :items         => './test/fixtures/items_fixtures.csv',
+            :invoices      => './test/fixtures/invoices_fixtures.csv',
+            :invoice_items => './test/fixtures/invoice_items_fixtures.csv',
+            :transactions  => './test/fixtures/transactions_fixtures.csv',
+            :customers     => './test/fixtures/customers_fixtures.csv'
             })
     @mr = se.merchants
     @sa = SalesAnalyst.new(se)
@@ -94,8 +94,9 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_top_days_by_invoice_count_returns_array_of_weekdays
-    assert_equal nil, @sa.top_days_by_invoice_count[0]
-    assert_equal 0, @sa.top_days_by_invoice_count.count
+    assert_equal "Friday", @sa.top_days_by_invoice_count[0]
+    assert_equal "Monday", @sa.top_days_by_invoice_count[1]
+    assert_equal 2, @sa.top_days_by_invoice_count.count
   end
 
   def test_invoice_status_returns_percentage_of_shipped_returned_and_pending
@@ -154,12 +155,6 @@ class SalesAnalystTest < Minitest::Test
     assert_equal 13, @sa.find_total_quantity_of_items_sold(12334112)[263395721]
     assert_equal 4, @sa.find_total_quantity_of_items_sold(12334112).length
   end
-
-  # def test_find_top_invoice_item_finds_invoice_item_with_highest_quantity
-  #   skip
-  #   assert_equal InvoiceItem, @sa.find_top_invoice_items(12334112)[0].class
-  #   assert_equal Array, @sa.find_top_invoice_items(12334112).class
-  # end
 
   def test_most_sold_item_for_merchant_returns_array_with_item
     assert_equal Item, @sa.most_sold_item_for_merchant(12334113)[0].class

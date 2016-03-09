@@ -17,11 +17,17 @@ class InvoiceItemRepository
   end
 
   def make_invoice_items(invoice_item_hashes)
-    invoice_item_hashes.each do |invoice_item_hash|
-      @invoice_items << InvoiceItem.new(invoice_item_hash, self)
+    @invoice_items = invoice_item_hashes.map do |invoice_item_hash|
+      InvoiceItem.new(invoice_item_hash, self)
     end
-    @invoice_items
   end
+
+  # def make_invoice_items(invoice_item_hashes)
+  #   invoice_item_hashes.each do |invoice_item_hash|
+  #     @invoice_items << InvoiceItem.new(invoice_item_hash, self)
+  #   end
+  #   @invoice_items
+  # end
 
   def all
     @invoice_items

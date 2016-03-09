@@ -9,12 +9,12 @@ require_relative '../lib/sales_engine'
 class MerchantTest < Minitest::Test
   def setup
     se = SalesEngine.from_csv({
-            :merchants => './fixtures/merchants_fixtures.csv',
-            :items     => './fixtures/items_fixtures.csv',
-            :invoices      => './fixtures/invoices_fixtures.csv',
-            :invoice_items => './fixtures/invoice_items_fixtures.csv',
-            :transactions  => './fixtures/transactions_fixtures.csv',
-            :customers => './fixtures/customers_fixtures.csv'
+            :merchants     => './test/fixtures/merchants_fixtures.csv',
+            :items         => './test/fixtures/items_fixtures.csv',
+            :invoices      => './test/fixtures/invoices_fixtures.csv',
+            :invoice_items => './test/fixtures/invoice_items_fixtures.csv',
+            :transactions  => './test/fixtures/transactions_fixtures.csv',
+            :customers     => './test/fixtures/customers_fixtures.csv'
             })
     @m = se.merchants.find_by_id(12334105)
   end
@@ -53,12 +53,12 @@ class MerchantTest < Minitest::Test
   end
 
   def test_revenue_sums_revenue_of_merchants
-    assert_equal 9409.36, @m.revenue
+    assert_equal 9409.36, @m.revenue.to_f
+    assert_equal BigDecimal, @m.revenue.class
   end
 
   def test_find_invoice_items_returns_array_of_all_invoice_items_for_merchant
     assert_equal InvoiceItem, @m.invoice_items[0].class
     assert_equal 5, @m.invoice_items[0].id
   end
-
 end
