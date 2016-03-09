@@ -97,7 +97,6 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_top_days_by_invoice_count_returns_array_of_weekdays
-    skip
     assert_equal "Friday", @sa.top_days_by_invoice_count[0]
     assert_equal "Monday", @sa.top_days_by_invoice_count[1]
     assert_equal nil, @sa.top_days_by_invoice_count[2]
@@ -141,6 +140,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_top_buyers_returns_number_of_buyers_designated
+    skip
     assert_equal 1, @sa.top_buyers(2).count
   end
 
@@ -151,6 +151,7 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_one_time_buyers_item_returns_items_on_invoice
+    skip
     assert_equal Array, @sa.one_time_buyers_item.class
     assert_equal 263396013, @sa.one_time_buyers_item[0].id
   end

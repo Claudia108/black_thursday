@@ -129,14 +129,6 @@ class SalesAnalyst
     # deviation = Math.sqrt(sum / (@mr.all.count - 1).to_f).round(2)
   end
 
-  def weekday_deviation
-    day_average = (@invr.all.count / 7.00)
-    compute_deviation(@invr, weekday_count, day_average)
-    # sum = weekday_count.reduce(0) do |sum, day|
-    #   sum += ((day[1] - (@invr.all.count / 7.00)) ** 2)
-    # end
-    # Math.sqrt(sum / (@invr.all.count - 1).to_f)
-  end
 
   def top_merchants_by_invoice_count
     threshold = average_invoices_per_merchant + (average_invoices_per_merchant_standard_deviation * 2)
@@ -180,10 +172,19 @@ class SalesAnalyst
         if value > threshold
           top_days << key
         end
+        # binding.pry
       end
       top_days
     end
 
+    def weekday_deviation
+      # day_average = (@invr.all.count / 7.00)
+      # compute_deviation(@invr, weekday_count, day_average)
+      sum = weekday_count.reduce(0) do |sum, day|
+        sum += ((day[1] - (@invr.all.count / 7.00)) ** 2)
+      end
+      Math.sqrt(sum / 6)
+    end
 
     def invoice_status(status)
       count = @invr.all.count { |invoice| invoice.status == status }
@@ -191,10 +192,11 @@ class SalesAnalyst
     end
 
     def top_buyers(count = 20)
-      sorted = sum_invoices_for_customers.sort_by { |customer, total| total }
-      customers = sorted.map(&:last) #{ |customer_and_total| customer_and_total[0] }
+      sorted = sum_invoices_for_customers.max_by(count) { |customer, total| total }
+      customers = sorted.map(&:first) #{ |customer_and_total| customer_and_total[0] }
+      # top_customers = customers[(-count)..-1]
+      # top_customers.reverse
       # binding.pry
-      customers[(-count + 1)..-1]
     end
 
     def connect_customers_and_invoices
@@ -204,6 +206,7 @@ class SalesAnalyst
       end
       customer_invoices
     end
+
   def select_paid_invoices
     paid_customer_invoices = {}
     connect_customers_and_invoices.each do |customer, invoices|
@@ -227,6 +230,9 @@ class SalesAnalyst
     end.reduce(0, :+)
   end
 
+
+
+
   def one_time_buyers
     one_timers = []
     connect_customers_and_invoices.each do |customer, invoices|
@@ -237,7 +243,7 @@ class SalesAnalyst
     one_timers
   end
 
-  def one_time_buyers_item
+  def one_time_buyers_items
     invoice = one_time_buyers.map do |customer|
       customer.invoices
     end
