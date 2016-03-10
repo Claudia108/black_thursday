@@ -20,7 +20,7 @@ class TransactionTest < Minitest::Test
   end
 
   def test_transaction_has_access_to_repository
-    assert_equal TranscationRepository, @transaction.repository.class
+    assert_equal TransactionRepository, @transaction.repository.class
   end
 
   def test_initalize_organizes_row_value_id
